@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8" /><title>Settings - RT-Detect</title><link rel="stylesheet" href="css/style.css" /></head>
+<body>
+  <div class="nav"><div class="brand">RT-Detect</div><div class="menu"><a href="index.html">Dashboard</a><a href="live.html">Live</a><a href="settings.html" class="active">Settings</a></div></div>
+  <div class="container">
+    <h1>Settings</h1>
+    <label>Camera source:
+      <select id="cameraSource"><option value="webcam">Webcam</option><option value="ip">IP Camera</option></select>
+    </label>
+    <label>Model imgsz: <input id="settingImgsz" value="640" /></label>
+    <label>Confidence threshold: <input id="settingConf" value="0.5" /></label>
+    <button id="saveSettings">Save Settings</button>
+  </div>
+  <script src="js/main.js"></script>
+</body>
+</html>

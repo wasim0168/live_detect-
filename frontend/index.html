@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Real-time Detection</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <div class="nav">
+    <div class="brand">
+      <i class="fas fa-shield-alt"></i>
+      <span>RT-Detect</span>
+    </div>
+    <div class="menu">
+      <a href="index.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="live.html"><i class="fas fa-video"></i> Live</a>
+      <a href="upload.html"><i class="fas fa-upload"></i> Upload</a>
+      <a href="alerts.html"><i class="fas fa-bell"></i> Alerts</a>
+      <a href="logs.html"><i class="fas fa-history"></i> Logs</a>
+      <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+      <a href="users.html"><i class="fas fa-users"></i> Users</a>
+      <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
+      <a href="login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+    </div>
+    <div class="mobile-menu-toggle">
+      <i class="fas fa-bars"></i>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <h1>Dashboard</h1>
+      <div class="date-time">
+        <span id="current-date"></span>
+        <span id="current-time"></span>
+      </div>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-video"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Live Cameras</h3>
+          <span class="stat-value">4</span>
+          <span class="stat-change positive">+1 today</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-bell"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Active Alerts</h3>
+          <span class="stat-value">12</span>
+          <span class="stat-change negative">+3 today</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Detections</h3>
+          <span class="stat-value">1,247</span>
+          <span class="stat-change positive">+142 today</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+          <h3>Crowd Count</h3>
+          <span class="stat-value">86</span>
+          <span class="stat-change positive">+12 today</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main Dashboard Cards -->
+    <div class="section-title">
+      <h2>Quick Actions</h2>
+      <p>Access key features of the detection system</p>
+    </div>
+    
+    <div class="cards">
+      <div class="card" onclick="location.href='live.html'">
+        <div class="card-icon">
+          <i class="fas fa-video"></i>
+        </div>
+        <h3>Live Detection</h3>
+        <p>Start real-time camera detection with advanced analytics</p>
+        <div class="card-footer">
+          <span class="card-action">Start Monitoring <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </div>
+      
+      <div class="card" onclick="location.href='upload.html'">
+        <div class="card-icon">
+          <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <h3>Upload & Detect</h3>
+        <p>Analyze images and videos with AI-powered detection</p>
+        <div class="card-footer">
+          <span class="card-action">Upload Files <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </div>
+      
+      <div class="card" onclick="location.href='alerts.html'">
+        <div class="card-icon">
+          <i class="fas fa-bell"></i>
+        </div>
+        <h3>Alerts</h3>
+        <p>Review security alerts and configure notifications</p>
+        <div class="card-footer">
+          <span class="card-action">View Alerts <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </div>
+      
+      <div class="card" onclick="location.href='logs.html'">
+        <div class="card-icon">
+          <i class="fas fa-history"></i>
+        </div>
+        <h3>Detection Logs</h3>
+        <p>View complete detection history and analytics</p>
+        <div class="card-footer">
+          <span class="card-action">View Logs <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </div>
+      
+      <div class="card" onclick="location.href='Croud.html'">
+        <div class="card-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3>Crowd Counting</h3>
+        <p>Monitor and analyze crowd density in real-time</p>
+        <div class="card-footer">
+          <span class="card-action">View Analytics <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </div>
+      
+      <div class="card" onclick="location.href='settings.html'">
+        <div class="card-icon">
+          <i class="fas fa-cog"></i>
+        </div>
+        <h3>System Settings</h3>
+        <p>Configure detection parameters and system preferences</p>
+        <div class="card-footer">
+          <span class="card-action">Configure <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Recent Activity Section -->
+    <div class="activity-section">
+      <div class="section-title">
+        <h2>Recent Activity</h2>
+        <a href="logs.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+      </div>
+      
+      <div class="activity-list">
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-bell"></i>
+          </div>
+          <div class="activity-details">
+            <p>Motion detected in Camera 3</p>
+            <span class="activity-time">2 minutes ago</span>
+          </div>
+          <span class="activity-status alert">Alert</span>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-video"></i>
+          </div>
+          <div class="activity-details">
+            <p>Live detection started on Camera 1</p>
+            <span class="activity-time">15 minutes ago</span>
+          </div>
+          <span class="activity-status info">Info</span>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="activity-details">
+            <p>Crowd density threshold exceeded in Area B</p>
+            <span class="activity-time">1 hour ago</span>
+          </div>
+          <span class="activity-status warning">Warning</span>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-upload"></i>
+          </div>
+          <div class="activity-details">
+            <p>Video analysis completed for "parking_lot.mp4"</p>
+            <span class="activity-time">3 hours ago</span>
+          </div>
+          <span class="activity-status success">Completed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>RT-Detect</h4>
+        <p>Advanced real-time detection and analytics platform</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="live.html">Live Detection</a>
+        <a href="upload.html">Upload Files</a>
+        <a href="alerts.html">Alerts</a>
+      </div>
+      <div class="footer-section">
+        <h4>Support</h4>
+        <a href="about.html">Documentation</a>
+        <a href="about.html">Contact Us</a>
+        <a href="about.html">FAQ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2023 RT-Detect. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Update date and time
+    function updateDateTime() {
+      const now = new Date();
+      const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      
+      document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', dateOptions);
+      document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', timeOptions);
+    }
+    
+    // Update immediately and then every second
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+    
+    // Mobile menu toggle
+    document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+      document.querySelector('.menu').classList.toggle('active');
+    });
+  </script>
+</body>
+</html>

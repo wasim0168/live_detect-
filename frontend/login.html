@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Interactive Login | AsmrProg</title>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: rgb(36, 30, 27);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none; /* This prevents interaction with the 3D canvas */
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(255, 208, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            width: 900px;
+            max-width: 95%;
+            min-height: 550px;
+            backdrop-filter: blur(15px);
+            border: 3px solid rgba(255, 145, 0,0.4);
+            z-index: 10;
+            transition: transform 0.5s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: all 0.6s ease-in-out;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sign-in {
+            left: 0;
+            z-index: 2;
+        }
+
+        .container.active .sign-in {
+            transform: translateX(100%);
+        }
+.sign-up{
+    left: 50%;   /* Pushes it to the right side */
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+}
+
+        .container.active .sign-up {
+            transform: translateX(100%);
+            opacity: 1;
+            z-index: 5;
+            animation: move 0.6s;
+        }
+
+        @keyframes move {
+            0%, 49.99% {
+                opacity: 0;
+                z-index: 1;
+            }
+            50%, 100% {
+                opacity: 1;
+                z-index: 5;
+            }
+        }
+
+        form {
+            background: rgba(6, 1, 1, 0.4);
+            padding: 40px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .social-icons a:hover {
+            transform: translateY(-3px) scale(1.1);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        span {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin: 10px 0 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            width: 100%;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .password-toggle {
+            position: absolute;
+            display: none;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: rgb(0, 0, 0);
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin: 15px 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .forgot-password {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(360deg, #11061c 0%, #ffa200 90%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        button:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+
+        .toggle-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: all 0.6s ease-in-out;
+            z-index: 1000;
+            border-radius: 0 20px 20px 0;
+        }
+
+        .container.active .toggle-container {
+            transform: translateX(-100%);
+            border-radius: 20px 0 0 20px;
+        }
+
+        .toggle {
+            background:linear-gradient(rgb(247, 110, 6), rgb(93, 34, 34));
+            height: 100%;
+            color: white;
+            position: relative;
+            left: -100%;
+            width: 200%;
+            transform: translateX(0);
+            transition: all 0.6s ease-in-out;
+        }
+
+        .container.active .toggle {
+            transform: translateX(50%);
+        }
+
+        .toggle-panel {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            transform: translateX(0);
+            transition: all 0.6s ease-in-out;
+        }
+
+        .toggle-left {
+            transform: translateX(-200%);
+        }
+
+        .container.active .toggle-left {
+            transform: translateX(0);
+        }
+
+        .toggle-right {
+            right: 0;
+            transform: translateX(0);
+        }
+
+        .container.active .toggle-right {
+            transform: translateX(200%);
+        }
+
+        .toggle-panel h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-panel p {
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .toggle-panel button {
+            /* background: transparent; */
+            border: 2px solid white;
+        }
+
+        .toggle-panel button:hover {
+            background: rgba(246, 229, 0, 0.1);
+        }
+
+        .floating-label {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus + .floating-label,
+        input:not(:placeholder-shown) + .floating-label {
+            top: -10px;
+            left: 15px;
+            font-size: 12px;
+            color: white;
+            background: rgba(106, 17, 203, 0.8);
+            padding: 2px 10px;
+            border-radius: 10px;
+        }
+
+        .animation-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .animation-controls button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            width: auto;
+            padding: 0;
+        }
+
+        .animation-controls button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .theme-toggle button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            width: auto;
+            padding: 0;
+        }
+
+        .theme-toggle button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .password-strength {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .weak {
+            background: #ff4757;
+            width: 33%;
+        }
+
+        .medium {
+            background: #ffa502;
+            width: 66%;
+        }
+
+        .strong {
+            background: #2ed573;
+            width: 100%;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        .language-selector select {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: white;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .language-selector select option {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                min-height: 500px;
+            }
+            
+            .form-container {
+                width: 100%;
+            }
+            
+            .toggle-container {
+                display: none;
+            }
+            
+            .container.active .sign-in {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            
+            .container.active .sign-up {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            
+            .mobile-toggle {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+            
+            .mobile-toggle button {
+                background: transparent;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                width: auto;
+                margin: 0 10px;
+            }
+        }
+
+        .mobile-toggle {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div></div>
+<!-- 
+    <div class="theme-toggle">
+        <button id="themeToggle"><i class="fas fa-moon"></i></button>
+    </div> -->
+
+    <div class="container" id="container">
+        <div class="form-container sign-in">
+            <form id="loginForm">
+                <h1>Sign In</h1>
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email password</span>
+                
+                <div class="input-group">
+                    <input type="email" id="loginEmail" placeholder=" " required>
+                    <label class="floating-label" for="loginEmail">Email</label>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="loginPassword" placeholder=" " required>
+                    <label class="floating-label" for="loginPassword">Password</label>
+                    <button type="button" class="password-toggle" id="toggleLoginPassword">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+                
+                <div class="options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember">
+                        Remember Me
+                    </label>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                </div>
+                
+                <button type="submit">Sign In</button>
+            </form>
+        </div>
+        
+        <div class="form-container sign-up">
+            <form id="signupForm">
+                <h1>Create Account</h1>
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                
+                <div class="input-group">
+                    <input type="text" id="fullName" placeholder=" " required>
+                    <label class="floating-label" for="fullName">Full Name</label>
+                </div>
+                
+                <div class="input-group">
+                    <input type="email" id="signupEmail" placeholder=" " required>
+                    <label class="floating-label" for="signupEmail">Email</label>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="signupPassword" placeholder=" " required>
+                    <label class="floating-label" for="signupPassword">Password</label>
+                    <button type="button" class="password-toggle" id="toggleSignupPassword">
+                        <i class="far fa-eye"></i>
+                    </button>
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="confirmPassword" placeholder=" " required>
+                    <label class="floating-label" for="confirmPassword">Confirm Password</label>
+                </div>
+                
+                <div class="options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="agreeTerms" required>
+                        I agree to the Terms and Conditions
+                    </label>
+                </div>
+                
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+        
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Enter your personal details to use all of site features</p>
+                    <button class="hidden" id="login">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Register with your personal details to use all of site features</p>
+                    <button class="hidden" id="register">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-toggle">
+        <button id="mobileLogin">Sign In</button>
+        <button id="mobileRegister">Sign Up</button>
+    </div>
+
+    <!-- <div class="animation-controls">
+        <button id="pauseAnimation"><i class="fas fa-pause"></i></button>
+        <button id="playAnimation"><i class="fas fa-play"></i></button>
+        <button id="changeAnimation"><i class="fas fa-sync"></i></button>
+    </div> -->
+
+    <div class="notification" id="notification"></div>
+<script src="js/login.js"></script>
+    <script>
+        // Three.js 3D Animation
+        let scene, camera, renderer, particles, particleSystem;
+        let animationId;
+        let isAnimating = true;
+        let animationStyle = 1; // 1: Particles, 2: Geometric shapes, 3: Waves
+        
+        function initThreeJS() {
+            // Create scene
+            scene = new THREE.Scene();
+            
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+            
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ 
+                alpha: true, 
+                antialias: true,
+                // This prevents the canvas from blocking pointer events
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            
+            // Make the canvas non-interactive
+            const canvas = renderer.domElement;
+            canvas.style.pointerEvents = 'none';
+            canvas.style.userSelect = 'none';
+            
+            document.getElementById('three-container').appendChild(renderer.domElement);
+            
+            createParticles();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize, false);
+            
+            // Start animation
+            animate();
+        }
+        
+        function createParticles() {
+            // Clear existing particles
+            if (particleSystem) {
+                scene.remove(particleSystem);
+            }
+            
+            if (animationStyle === 1) {
+                // Particle system
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const colors = [];
+                
+                for (let i = 0; i < 2000; i++) {
+                    // Random position in a spherical distribution
+                    const radius = Math.random() * 30 + 10;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.random() * Math.PI;
+                    
+                    vertices.push(
+                        radius * Math.sin(phi) * Math.cos(theta),
+                        radius * Math.sin(phi) * Math.sin(theta),
+                        radius * Math.cos(phi)
+                    );
+                    
+                    // Color based on position
+                    const colorIntensity = (radius - 10) / 30;
+                    colors.push(
+                        0.9 - colorIntensity * 0.5,
+                        0.8 - colorIntensity * 0.8,
+                        0.1 + colorIntensity * 0.6
+                    );
+                }
+                
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                
+                const material = new THREE.PointsMaterial({
+                    size: 0.5,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                particleSystem = new THREE.Points(geometry, material);
+                scene.add(particleSystem);
+            } else if (animationStyle === 2) {
+                // Geometric shapes
+                particleSystem = new THREE.Group();
+                
+                for (let i = 0; i < 100; i++) {
+                    let geometry, material, mesh;
+                    
+                    if (i % 3 === 0) {
+                        geometry = new THREE.TetrahedronGeometry(1);
+                    } else if (i % 3 === 1) {
+                        geometry = new THREE.OctahedronGeometry(1);
+                    } else {
+                        geometry = new THREE.IcosahedronGeometry(1);
+                    }
+                    
+                    material = new THREE.MeshBasicMaterial({
+                        color: new THREE.Color().setHSL(Math.random(), 0.7, 0.5),
+                        wireframe: true,
+                        transparent: true,
+                        opacity: 0.6
+                    });
+                    
+                    mesh = new THREE.Mesh(geometry, material);
+                    
+                    // Random position
+                    mesh.position.x = (Math.random() - 0.5) * 60;
+                    mesh.position.y = (Math.random() - 0.5) * 60;
+                    mesh.position.z = (Math.random() - 0.5) * 60;
+                    
+                    // Random rotation
+                    mesh.rotation.x = Math.random() * Math.PI;
+                    mesh.rotation.y = Math.random() * Math.PI;
+                    
+                    // Store original positions for animation
+                    mesh.userData = {
+                        originalX: mesh.position.x,
+                        originalY: mesh.position.y,
+                        originalZ: mesh.position.z,
+                        speed: 0.5 + Math.random() * 1.5
+                    };
+                    
+                    particleSystem.add(mesh);
+                }
+                
+                scene.add(particleSystem);
+            } else if (animationStyle === 3) {
+                // Wave formation
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                const colors = [];
+                
+                const waveCount = 5;
+                const pointsPerWave = 200;
+                
+                for (let w = 0; w < waveCount; w++) {
+                    for (let i = 0; i < pointsPerWave; i++) {
+                        const t = i / pointsPerWave * Math.PI * 2;
+                        const radius = 15 + w * 3;
+                        
+                        vertices.push(
+                            Math.cos(t) * radius,
+                            Math.sin(t) * radius,
+                            Math.sin(t * 3 + w) * 2
+                        );
+                        
+                        // Color based on wave
+                        const hue = w / waveCount;
+                        colors.push(hue, 0.7, 0.5);
+                    }
+                }
+                
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                
+                const material = new THREE.PointsMaterial({
+                    size: 1.5,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                
+                particleSystem = new THREE.Points(geometry, material);
+                scene.add(particleSystem);
+            }
+            
+            // Add ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            
+            // Add directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function animate() {
+            // Always continue animation regardless of hover state
+            animationId = requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            
+            if (animationStyle === 1) {
+                // Particle animation
+                particleSystem.rotation.x += 0.001;
+                particleSystem.rotation.y += 0.002;
+                
+                const positions = particleSystem.geometry.attributes.position.array;
+                
+                for (let i = 0; i < positions.length; i += 3) {
+                    const x = positions[i];
+                    const y = positions[i + 1];
+                    const z = positions[i + 2];
+                    const distance = Math.sqrt(x*x + y*y + z*z);
+                    
+                    const pulse = Math.sin(time * 2 + distance * 0.1) * 0.5;
+                    
+                    positions[i] += Math.sin(time + y * 0.01) * 0.02;
+                    positions[i + 1] += Math.cos(time + x * 0.01) * 0.02;
+                    positions[i + 2] += pulse * 0.01;
+                }
+                
+                particleSystem.geometry.attributes.position.needsUpdate = true;
+            } else if (animationStyle === 2) {
+                // Geometric shapes animation
+                particleSystem.children.forEach((mesh, i) => {
+                    mesh.rotation.x += 0.01 * mesh.userData.speed;
+                    mesh.rotation.y += 0.005 * mesh.userData.speed;
+                    
+                    // Pulsing motion
+                    mesh.position.x = mesh.userData.originalX + Math.sin(time * mesh.userData.speed) * 2;
+                    mesh.position.y = mesh.userData.originalY + Math.cos(time * mesh.userData.speed) * 2;
+                    mesh.position.z = mesh.userData.originalZ + Math.sin(time * mesh.userData.speed * 0.7) * 2;
+                });
+            } else if (animationStyle === 3) {
+                // Wave animation
+                particleSystem.rotation.y += 0.002;
+                
+                const positions = particleSystem.geometry.attributes.position.array;
+                const waveCount = 5;
+                const pointsPerWave = 200;
+                
+                for (let w = 0; w < waveCount; w++) {
+                    for (let i = 0; i < pointsPerWave; i++) {
+                        const index = (w * pointsPerWave + i) * 3;
+                        const t = i / pointsPerWave * Math.PI * 2;
+                        const radius = 15 + w * 3;
+                        
+                        positions[index] = Math.cos(t) * radius;
+                        positions[index + 1] = Math.sin(t) * radius;
+                        positions[index + 2] = Math.sin(t * 3 + w + time * 2) * 2;
+                    }
+                }
+                
+                particleSystem.geometry.attributes.position.needsUpdate = true;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // UI Interactions
+        const container = document.getElementById('container');
+        const registerBtn = document.getElementById('register');
+        const loginBtn = document.getElementById('login');
+        const mobileRegisterBtn = document.getElementById('mobileRegister');
+        const mobileLoginBtn = document.getElementById('mobileLogin');
+        
+        registerBtn.addEventListener('click', () => {
+            container.classList.add("active");
+            showNotification("Switching to Sign Up");
+        });
+        
+        loginBtn.addEventListener('click', () => {
+            container.classList.remove("active");
+            showNotification("Switching to Sign In");
+        });
+        
+        mobileRegisterBtn.addEventListener('click', () => {
+            container.classList.add("active");
+            showNotification("Switching to Sign Up");
+        });
+        
+        mobileLoginBtn.addEventListener('click', () => {
+            container.classList.remove("active");
+            showNotification("Switching to Sign In");
+        });
+        
+        // Password toggle functionality
+        document.getElementById('toggleLoginPassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('loginPassword');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+        
+        document.getElementById('toggleSignupPassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('signupPassword');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+        
+        // Password strength indicator
+        document.getElementById('signupPassword').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('strengthBar');
+            const passwordStrength = document.getElementById('passwordStrength');
+            
+            if (password.length > 0) {
+                passwordStrength.style.display = 'block';
+                
+                let strength = 0;
+                if (password.length >= 8) strength += 1;
+                if (/[A-Z]/.test(password)) strength += 1;
+                if (/[0-9]/.test(password)) strength += 1;
+                if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+                
+                strengthBar.className = 'strength-bar';
+                if (strength <= 1) {
+                    strengthBar.classList.add('weak');
+                } else if (strength <= 2) {
+                    strengthBar.classList.add('medium');
+                } else {
+                    strengthBar.classList.add('strong');
+                }
+            } else {
+                passwordStrength.style.display = 'none';
+            }
+        });
+        
+        // Form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (email=="user01@gmail.com" && password=="1234") {
+                showNotification("Login successful! Redirecting...");
+                setTimeout(() => {
+                    window.location.href = "index.html"; // Redirect to dashboard
+                }, 1000);
+                // In a real app, you would send this data to a server
+                console.log('Login attempt:', { email, password });
+            } else {
+                showNotification("Please fill in all fields", "error");
+            }
+        });
+        
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (fullName && email && password && confirmPassword) {
+                if (password !== confirmPassword) {
+                    showNotification("Passwords do not match", "error");
+                    return;
+                }
+                
+                if (!document.getElementById('agreeTerms').checked) {
+                    showNotification("Please agree to the terms and conditions", "error");
+                    return;
+                }
+                
+                showNotification("Account created successfully!");
+                // In a real app, you would send this data to a server
+                console.log('Signup attempt:', { fullName, email, password });
+            } else {
+                showNotification("Please fill in all fields", "error");
+            }
+        });
+        
+        // Animation controls
+        document.getElementById('pauseAnimation').addEventListener('click', function() {
+            isAnimating = false;
+            cancelAnimationFrame(animationId);
+            showNotification("Animation paused");
+        });
+        
+        document.getElementById('playAnimation').addEventListener('click', function() {
+            if (!isAnimating) {
+                isAnimating = true;
+                animate();
+                showNotification("Animation resumed");
+            }
+        });
+        
+        document.getElementById('changeAnimation').addEventListener('click', function() {
+            animationStyle = animationStyle % 3 + 1;
+            createParticles();
+            showNotification(`Animation style changed to ${animationStyle}`);
+        });
+        
+        // Theme toggle
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('fa-moon')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                document.body.style.background = 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)';
+                showNotification("Light theme activated");
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+                showNotification("Dark theme activated");
+            }
+        });
+        
+        // Language selector
+        document.getElementById('language').addEventListener('change', function() {
+            const lang = this.value;
+            showNotification(`Language changed to ${this.options[this.selectedIndex].text}`);
+            // In a real app, you would update the text content based on the selected language
+        });
+        
+        // Notification system
+        function showNotification(message, type = "success") {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            notification.style.background = type === "error" ? 'rgba(255, 71, 87, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+            notification.style.color = type === "error" ? 'white' : '#333';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Mouse move effect - only for visual feedback, doesn't affect animation
+        document.addEventListener('mousemove', function(e) {
+            if (!camera || !particleSystem) return;
+            
+            const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            
+            // Only apply subtle rotation for visual effect
+            if (animationStyle === 1) {
+                particleSystem.rotation.y += mouseX * 0.0005;
+                particleSystem.rotation.x += mouseY * 0.0005;
+            }
+        });
+        
+        // Initialize Three.js when page loads
+        window.addEventListener('load', initThreeJS);
+    </script>
+</body>
+</html>
