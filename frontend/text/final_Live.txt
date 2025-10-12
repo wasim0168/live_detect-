@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Detection - RT-Detect</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     /* CSS Variables */
     :root {
@@ -192,19 +191,19 @@
     }
 
     .video-container-wrapper {
-      display: grid;
-      grid-template-columns: 1fr 300px;
+      display: flex;
       gap: 20px;
       padding: 25px;
     }
 
     @media (max-width: 1024px) {
       .video-container-wrapper {
-        grid-template-columns: 1fr;
+        flex-direction: column;
       }
     }
 
     .video-container {
+      flex: 1;
       position: relative;
       border-radius: var(--border-radius);
       overflow: hidden;
@@ -321,6 +320,7 @@
 
     /* Detection Sidebar */
     .detection-sidebar {
+      width: 300px;
       display: flex;
       flex-direction: column;
       gap: 20px;
@@ -502,11 +502,10 @@
       padding: 15px;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 8px;
-      
     }
 
     .counter-value {
-      font-size: 24px;
+      font-size: 2rem;
       font-weight: 700;
       display: block;
       margin-bottom: 5px;
@@ -574,20 +573,6 @@
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-    }
-
-    /* Stats Section Below Camera */
-    .stats-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    @media (max-width: 768px) {
-      .stats-section {
-        grid-template-columns: 1fr;
-      }
     }
 
     /* Alerts Panel */
@@ -1018,86 +1003,79 @@
       </div>
       
       <div class="video-container-wrapper">
-        <!-- Main Camera Feed Area -->
-        <div class="video-main-section">
-          <div class="video-container">
-            <div id="video-container">
-              <video id="video" autoplay playsinline muted></video>
-              <canvas id="overlay"></canvas>
-              <div class="video-placeholder" id="videoPlaceholder">
-                <p>Camera feed will appear here</p>
-              </div>
+        <div class="video-container">
+          <div id="video-container">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="overlay"></canvas>
+            <div class="video-placeholder" id="videoPlaceholder">
+              <p>Camera feed will appear here</p>
             </div>
-            
-            <!-- Detection Stats Overlay -->
-            <div class="stats-overlay">
-              <div class="stat-item">
-                <span class="stat-label">Objects Detected</span>
-                <span class="stat-value" id="objectsCount">0</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">FPS</span>
-                <span class="stat-value" id="fpsCounter">0</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Detection Time</span>
-                <span class="stat-value" id="detectionTime">0ms</span>
-              </div>
+          </div>
+          
+          <!-- Detection Stats Overlay -->
+          <div class="stats-overlay">
+            <div class="stat-item">
+              <span class="stat-label">Objects Detected</span>
+              <span class="stat-value" id="objectsCount">0</span>
             </div>
-
-            <!-- Direction Indicator -->
-            <div class="direction-indicator">
-              <div class="direction-item">
-                <span class="direction-arrow direction-in">⬆️ IN</span>
-                <span class="direction-count" id="inCount">0</span>
-              </div>
-              <div class="direction-item">
-                <span class="direction-arrow direction-out">⬇️ OUT</span>
-                <span class="direction-count" id="outCount">0</span>
-              </div>
+            <div class="stat-item">
+              <span class="stat-label">FPS</span>
+              <span class="stat-value" id="fpsCounter">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Detection Time</span>
+              <span class="stat-value" id="detectionTime">0ms</span>
             </div>
           </div>
 
-          <!-- Stats Section Below Camera -->
-          <div class="stats-section">
-            <!-- People Counter -->
-            <div class="people-counter">
-              <div class="counter-header">
-                <h3>People Counter</h3>
-                <span class="badge" id="peopleAlert">LIVE</span>
-              </div>
-              <div class="counter-stats">
-                <div class="counter-item">
-                  <span class="counter-value" id="currentPeople">0</span>
-                  <span class="counter-label">Current</span>
-                  <div class="counter-change" id="peopleChange">+0</div>
-                </div>
-                <div class="counter-item">
-                  <span class="counter-value" id="totalIn">0</span>
-                  <span class="counter-label">Total IN</span>
-                  <div class="counter-change change-positive" id="inChange">+0</div>
-                </div>
-                <div class="counter-item">
-                  <span class="counter-value" id="totalOut">0</span>
-                  <span class="counter-label">Total OUT</span>
-                  <div class="counter-change change-negative" id="outChange">-0</div>
-                </div>
-              </div>
+          <!-- Direction Indicator -->
+          <div class="direction-indicator">
+            <div class="direction-item">
+              <span class="direction-arrow direction-in">⬆️ IN</span>
+              <span class="direction-count" id="inCount">0</span>
             </div>
-
-            <!-- Object Counter -->
-            <div class="object-counter">
-              <h3 style="margin-bottom: 15px;">Objects Detected</h3>
-              <div class="object-grid" id="objectGrid">
-                <!-- Objects will be populated here -->
-              </div>
-              <hr style="margin: 20px 0;">
+            <div class="direction-item">
+              <span class="direction-arrow direction-out">⬇️ OUT</span>
+              <span class="direction-count" id="outCount">0</span>
             </div>
           </div>
         </div>
         
-        <!-- Detection Sidebar (Right Side) -->
+        <!-- Detection Sidebar -->
         <div class="detection-sidebar">
+          <!-- People Counter -->
+          <div class="people-counter">
+            <div class="counter-header">
+              <h3>People Counter</h3>
+              <span class="badge" id="peopleAlert">LIVE</span>
+            </div>
+            <div class="counter-stats">
+              <div class="counter-item">
+                <span class="counter-value" id="currentPeople">0</span>
+                <span class="counter-label">Current</span>
+                <div class="counter-change" id="peopleChange">+0</div>
+              </div>
+              <div class="counter-item">
+                <span class="counter-value" id="totalIn">0</span>
+                <span class="counter-label">Total IN</span>
+                <div class="counter-change change-positive" id="inChange">+0</div>
+              </div>
+              <div class="counter-item">
+                <span class="counter-value" id="totalOut">0</span>
+                <span class="counter-label">Total OUT</span>
+                <div class="counter-change change-negative" id="outChange">-0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Object Counter -->
+          <div class="object-counter">
+            <h3 style="margin-bottom: 15px;">Objects Detected</h3>
+            <div class="object-grid" id="objectGrid">
+              <!-- Objects will be populated here -->
+            </div>
+          </div>
+
           <!-- Controls Section -->
           <div class="sidebar-section">
             <h3>Detection Controls</h3>
@@ -1285,11 +1263,20 @@
       
       // Object icons mapping
       const objectIcons = {
-        'person': `<i class="fa-solid fa-person"></i>`,
-        'car': `<i class="fa-solid fa-car"></i>`,
-        'bicycle': `<i class="fa-solid fa-bicycle"></i>`
-        
-        
+        'person': '👤',
+        'car': '🚗',
+        'bicycle': '🚲',
+        'motorcycle': '🏍️',
+        'bus': '🚌',
+        'truck': '🚚',
+        'dog': '🐕',
+        'cat': '🐈',
+        'bird': '🐦',
+        'chair': '🪑',
+        'book': '📚',
+        'laptop': '💻',
+        'cell phone': '📱',
+        'default': '📦'
       };
       
       // Initialize the page
@@ -1341,7 +1328,7 @@
       
       // Initialize object grid
       function initializeObjectGrid() {
-        const commonObjects = ['person', 'car', 'bicycle'];
+        const commonObjects = ['person', 'car', 'bicycle', 'motorcycle', 'bus', 'truck', 'dog', 'cat'];
         objectGrid.innerHTML = commonObjects.map(obj => `
           <div class="object-item" data-object="${obj}">
             <div class="object-icon">${objectIcons[obj] || objectIcons.default}</div>
@@ -1581,19 +1568,12 @@
       
       // Update object counts
       function updateObjectCounts(detections) {
-        // Reset counts for this frame
-        const frameCounts = {};
         detections.forEach(det => {
           const objectName = det.name;
-          frameCounts[objectName] = (frameCounts[objectName] || 0) + 1;
-        });
-        
-        // Update persistent counts
-        Object.keys(frameCounts).forEach(obj => {
-          if (!objectCounts[obj]) {
-            objectCounts[obj] = 0;
+          if (!objectCounts[objectName]) {
+            objectCounts[objectName] = 0;
           }
-          objectCounts[obj] = frameCounts[obj]; // Use current frame count instead of accumulating
+          objectCounts[objectName]++;
         });
       }
       

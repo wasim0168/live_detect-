@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Detection - RT-Detect</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     /* CSS Variables */
     :root {
@@ -192,19 +191,19 @@
     }
 
     .video-container-wrapper {
-      display: grid;
-      grid-template-columns: 1fr 300px;
+      display: flex;
       gap: 20px;
       padding: 25px;
     }
 
     @media (max-width: 1024px) {
       .video-container-wrapper {
-        grid-template-columns: 1fr;
+        flex-direction: column;
       }
     }
 
     .video-container {
+      flex: 1;
       position: relative;
       border-radius: var(--border-radius);
       overflow: hidden;
@@ -283,44 +282,9 @@
       color: var(--accent);
     }
 
-    .direction-indicator {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(10px);
-      border-radius: 8px;
-      padding: 12px;
-      z-index: 10;
-    }
-
-    .direction-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 5px 0;
-    }
-
-    .direction-arrow {
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    .direction-in {
-      color: var(--success);
-    }
-
-    .direction-out {
-      color: var(--danger);
-    }
-
-    .direction-count {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
     /* Detection Sidebar */
     .detection-sidebar {
+      width: 300px;
       display: flex;
       flex-direction: column;
       gap: 20px;
@@ -469,127 +433,6 @@
       color: var(--accent);
     }
 
-    /* People Counter */
-    .people-counter {
-      background: var(--card);
-      border-radius: var(--border-radius);
-      padding: 20px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .counter-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .counter-header h3 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .counter-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      text-align: center;
-    }
-
-    .counter-item {
-      padding: 15px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 8px;
-      
-    }
-
-    .counter-value {
-      font-size: 24px;
-      font-weight: 700;
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .counter-label {
-      font-size: 12px;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .counter-change {
-      font-size: 14px;
-      font-weight: 600;
-      margin-top: 5px;
-    }
-
-    .change-positive {
-      color: var(--success);
-    }
-
-    .change-negative {
-      color: var(--danger);
-    }
-
-    /* Object Counter */
-    .object-counter {
-      background: var(--card);
-      border-radius: var(--border-radius);
-      padding: 20px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .object-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 10px;
-    }
-
-    .object-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 6px;
-      text-align: center;
-    }
-
-    .object-icon {
-      font-size: 20px;
-      margin-bottom: 5px;
-    }
-
-    .object-count {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 2px;
-    }
-
-    .object-name {
-      font-size: 11px;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    /* Stats Section Below Camera */
-    .stats-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    @media (max-width: 768px) {
-      .stats-section {
-        grid-template-columns: 1fr;
-      }
-    }
-
     /* Alerts Panel */
     .alerts-panel {
       background: var(--card);
@@ -629,10 +472,6 @@
       border-left-color: var(--info);
     }
 
-    .alert-success {
-      border-left-color: var(--success);
-    }
-
     .alert-icon {
       font-size: 16px;
       margin-top: 2px;
@@ -648,10 +487,6 @@
 
     .alert-info .alert-icon::before {
       content: "ℹ️";
-    }
-
-    .alert-success .alert-icon::before {
-      content: "✅";
     }
 
     .alert-content {
@@ -877,16 +712,6 @@
       }
     }
 
-    @keyframes countChange {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-
-    .count-change {
-      animation: countChange 0.5s ease-in-out;
-    }
-
     /* Responsive Design */
     @media (max-width: 768px) {
       .nav {
@@ -931,14 +756,6 @@
         grid-template-columns: 1fr;
       }
 
-      .counter-stats {
-        grid-template-columns: 1fr;
-      }
-
-      .object-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
       .history-item {
         flex-direction: column;
         text-align: center;
@@ -962,10 +779,6 @@
 
       .sidebar-section {
         min-width: 100%;
-      }
-
-      .object-grid {
-        grid-template-columns: repeat(2, 1fr);
       }
 
       .footer-content {
@@ -1018,87 +831,34 @@
       </div>
       
       <div class="video-container-wrapper">
-        <!-- Main Camera Feed Area -->
-        <div class="video-main-section">
-          <div class="video-container">
-            <div id="video-container">
-              <video id="video" autoplay playsinline muted></video>
-              <canvas id="overlay"></canvas>
-              <div class="video-placeholder" id="videoPlaceholder">
-                <p>Camera feed will appear here</p>
-              </div>
-            </div>
-            
-            <!-- Detection Stats Overlay -->
-            <div class="stats-overlay">
-              <div class="stat-item">
-                <span class="stat-label">Objects Detected</span>
-                <span class="stat-value" id="objectsCount">0</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">FPS</span>
-                <span class="stat-value" id="fpsCounter">0</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Detection Time</span>
-                <span class="stat-value" id="detectionTime">0ms</span>
-              </div>
-            </div>
-
-            <!-- Direction Indicator -->
-            <div class="direction-indicator">
-              <div class="direction-item">
-                <span class="direction-arrow direction-in">⬆️ IN</span>
-                <span class="direction-count" id="inCount">0</span>
-              </div>
-              <div class="direction-item">
-                <span class="direction-arrow direction-out">⬇️ OUT</span>
-                <span class="direction-count" id="outCount">0</span>
-              </div>
+        <div class="video-container">
+          <div id="video-container">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="overlay"></canvas>
+            <div class="video-placeholder" id="videoPlaceholder">
+              <p>Camera feed will appear here</p>
             </div>
           </div>
-
-          <!-- Stats Section Below Camera -->
-          <div class="stats-section">
-            <!-- People Counter -->
-            <div class="people-counter">
-              <div class="counter-header">
-                <h3>People Counter</h3>
-                <span class="badge" id="peopleAlert">LIVE</span>
-              </div>
-              <div class="counter-stats">
-                <div class="counter-item">
-                  <span class="counter-value" id="currentPeople">0</span>
-                  <span class="counter-label">Current</span>
-                  <div class="counter-change" id="peopleChange">+0</div>
-                </div>
-                <div class="counter-item">
-                  <span class="counter-value" id="totalIn">0</span>
-                  <span class="counter-label">Total IN</span>
-                  <div class="counter-change change-positive" id="inChange">+0</div>
-                </div>
-                <div class="counter-item">
-                  <span class="counter-value" id="totalOut">0</span>
-                  <span class="counter-label">Total OUT</span>
-                  <div class="counter-change change-negative" id="outChange">-0</div>
-                </div>
-              </div>
+          
+          <!-- Detection Stats Overlay -->
+          <div class="stats-overlay">
+            <div class="stat-item">
+              <span class="stat-label">Objects Detected</span>
+              <span class="stat-value" id="objectsCount">0</span>
             </div>
-
-            <!-- Object Counter -->
-            <div class="object-counter">
-              <h3 style="margin-bottom: 15px;">Objects Detected</h3>
-              <div class="object-grid" id="objectGrid">
-                <!-- Objects will be populated here -->
-              </div>
-              <hr style="margin: 20px 0;">
+            <div class="stat-item">
+              <span class="stat-label">FPS</span>
+              <span class="stat-value" id="fpsCounter">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Detection Time</span>
+              <span class="stat-value" id="detectionTime">0ms</span>
             </div>
           </div>
         </div>
         
-        <!-- Detection Sidebar (Right Side) -->
+        <!-- Detection Sidebar -->
         <div class="detection-sidebar">
-          <!-- Controls Section -->
           <div class="sidebar-section">
             <h3>Detection Controls</h3>
             <div class="control-group">
@@ -1143,10 +903,6 @@
               <div class="toggle-item">
                 <input type="checkbox" id="enableAlerts" checked>
                 <label for="enableAlerts">Enable Alerts</label>
-              </div>
-              <div class="toggle-item">
-                <input type="checkbox" id="enablePeopleCounter" checked>
-                <label for="enablePeopleCounter">People Counter</label>
               </div>
             </div>
           </div>
@@ -1222,7 +978,7 @@
   </footer>
 
   <script>
-    // Enhanced Live Detection JavaScript with IN/OUT Counting
+    // Enhanced Live Detection JavaScript with Backend Integration
     document.addEventListener('DOMContentLoaded', function() {
       // DOM Elements
       const startBtn = document.getElementById('startBtn');
@@ -1244,18 +1000,6 @@
       const imgszInput = document.getElementById('imgsz');
       const showLabelsCheckbox = document.getElementById('showLabels');
       const enableAlertsCheckbox = document.getElementById('enableAlerts');
-      const enablePeopleCounterCheckbox = document.getElementById('enablePeopleCounter');
-      
-      // People counting elements
-      const currentPeople = document.getElementById('currentPeople');
-      const totalIn = document.getElementById('totalIn');
-      const totalOut = document.getElementById('totalOut');
-      const peopleChange = document.getElementById('peopleChange');
-      const inChange = document.getElementById('inChange');
-      const outChange = document.getElementById('outChange');
-      const inCount = document.getElementById('inCount');
-      const outCount = document.getElementById('outCount');
-      const objectGrid = document.getElementById('objectGrid');
       
       // State variables
       let isDetecting = false;
@@ -1265,55 +1009,51 @@
       let alertCounter = 0;
       let stream = null;
       
-      // People counting variables
-      let peopleCount = 0;
-      let previousPeopleCount = 0;
-      let totalInCount = 0;
-      let totalOutCount = 0;
-      let objectCounts = {};
-      let previousDetections = [];
-      let detectionHistory = [];
-      
-      // Backend configuration
+      // Backend configuration - Fixed to handle different scenarios
       const BACKEND_URL = (() => {
+        // Try to detect the current origin and adjust port
         const currentOrigin = window.location.origin;
         if (currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')) {
           return 'http://localhost:5000';
         }
+        // For production, you might want to use the same origin or a different strategy
         return currentOrigin.replace(/:\d+$/, ':5000');
       })();
-      
-      // Object icons mapping
-      const objectIcons = {
-        'person': `<i class="fa-solid fa-person"></i>`,
-        'car': `<i class="fa-solid fa-car"></i>`,
-        'bicycle': `<i class="fa-solid fa-bicycle"></i>`
-        
-        
-      };
       
       // Initialize the page
       function init() {
         setupEventListeners();
         updateStatus('Ready to connect', 'ready');
         checkBackendHealth();
-        initializeObjectGrid();
-        loadCountersFromStorage();
       }
       
       // Check if backend is running
       async function checkBackendHealth() {
         try {
-          const response = await fetch(`${BACKEND_URL}/health`);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          
+          const response = await fetch(`${BACKEND_URL}/health`, {
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
           if (response.ok) {
-            updateStatus('Backend connected', 'ready');
+            const health = await response.json();
+            updateStatus(`Backend connected (${health.model_loaded ? 'Model loaded' : 'No model'})`, 'ready');
           } else {
             updateStatus('Backend error', 'error');
             addAlert('error', 'Backend server is not responding properly');
           }
         } catch (error) {
           updateStatus('Backend disconnected', 'error');
-          addAlert('error', 'Cannot connect to detection backend. Make sure detector.py is running.');
+          
+          if (error.name === 'AbortError') {
+            addAlert('error', 'Backend connection timeout. Make sure detector.py is running.');
+          } else {
+            addAlert('error', `Cannot connect to detection backend: ${error.message}`);
+          }
         }
       }
       
@@ -1337,50 +1077,6 @@
       // Update confidence value display
       function updateConfidenceValue() {
         confidenceValue.textContent = confidenceSlider.value;
-      }
-      
-      // Initialize object grid
-      function initializeObjectGrid() {
-        const commonObjects = ['person', 'car', 'bicycle'];
-        objectGrid.innerHTML = commonObjects.map(obj => `
-          <div class="object-item" data-object="${obj}">
-            <div class="object-icon">${objectIcons[obj] || objectIcons.default}</div>
-            <div class="object-count">0</div>
-            <div class="object-name">${obj}</div>
-          </div>
-        `).join('');
-      }
-      
-      // Load counters from localStorage
-      function loadCountersFromStorage() {
-        try {
-          const savedCounters = localStorage.getItem('rt-detect-counters');
-          if (savedCounters) {
-            const counters = JSON.parse(savedCounters);
-            totalInCount = counters.totalIn || 0;
-            totalOutCount = counters.totalOut || 0;
-            objectCounts = counters.objectCounts || {};
-            updatePeopleCounter();
-            updateObjectGrid();
-          }
-        } catch (error) {
-          console.error('Error loading counters:', error);
-        }
-      }
-      
-      // Save counters to localStorage
-      function saveCountersToStorage() {
-        try {
-          const counters = {
-            totalIn: totalInCount,
-            totalOut: totalOutCount,
-            objectCounts: objectCounts,
-            timestamp: new Date().toISOString()
-          };
-          localStorage.setItem('rt-detect-counters', JSON.stringify(counters));
-        } catch (error) {
-          console.error('Error saving counters:', error);
-        }
       }
       
       // Start detection
@@ -1431,9 +1127,9 @@
       // Perform actual detection using backend
       async function performDetection() {
         if (!isDetecting) return;
-        
+
         frameCount++;
-        
+
         try {
           // Capture frame from video
           const canvas = document.createElement('canvas');
@@ -1452,25 +1148,28 @@
             imgsz: parseInt(imgszInput.value)
           };
           
-          // Send to backend
+          // Send to backend with timeout
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+          
           const detectionStart = performance.now();
           const response = await fetch(`${BACKEND_URL}/detect`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(requestData)
+            body: JSON.stringify(requestData),
+            signal: controller.signal
           });
           
+          clearTimeout(timeoutId);
+          
           if (!response.ok) {
-            throw new Error(`Backend error: ${response.status}`);
+            throw new Error(`Backend error: ${response.status} ${response.statusText}`);
           }
           
           const result = await response.json();
           const detectionEnd = performance.now();
-          
-          // Process detections
-          processDetections(result.detections || []);
           
           // Update stats
           objectsCount.textContent = result.detections ? result.detections.length : 0;
@@ -1486,126 +1185,20 @@
           
         } catch (error) {
           console.error('Detection error:', error);
-          addAlert('error', `Detection failed: ${error.message}`);
           
-          // Fallback to simulation if backend is not available
-          if (error.message.includes('Failed to fetch')) {
-            simulateDetection();
+          if (error.name === 'AbortError') {
+            addAlert('error', 'Detection request timed out. Check if backend is running.');
+          } else if (error.message.includes('Failed to fetch')) {
+            addAlert('error', 'Cannot connect to detection backend. Make sure detector.py is running on port 5000.');
+          } else {
+            addAlert('error', `Detection failed: ${error.message}`);
+          }
+          
+          // Stop detection on persistent errors
+          if (frameCount > 5) { // After several failed attempts
+            stopDetection();
           }
         }
-      }
-      
-      // Process detections for people counting
-      function processDetections(detections) {
-        if (!enablePeopleCounterCheckbox.checked) return;
-        
-        // Count current people
-        const currentPeopleDetections = detections.filter(det => det.name === 'person');
-        previousPeopleCount = peopleCount;
-        peopleCount = currentPeopleDetections.length;
-        
-        // Calculate IN/OUT
-        calculatePeopleMovement(currentPeopleDetections);
-        
-        // Update object counts
-        updateObjectCounts(detections);
-        
-        // Update displays
-        updatePeopleCounter();
-        updateObjectGrid();
-        
-        // Save to storage
-        saveCountersToStorage();
-        
-        // Store current detections for next comparison
-        previousDetections = currentPeopleDetections;
-      }
-      
-      // Calculate people movement (IN/OUT)
-      function calculatePeopleMovement(currentDetections) {
-        const peopleChange = peopleCount - previousPeopleCount;
-        
-        if (peopleChange > 0) {
-          // People entered
-          totalInCount += peopleChange;
-          inCount.textContent = `+${peopleChange}`;
-          inChange.textContent = `+${peopleChange}`;
-          inChange.classList.add('count-change');
-          
-          if (enableAlertsCheckbox.checked) {
-            addAlert('success', `${peopleChange} person(s) entered the area`);
-          }
-          
-          // Remove animation class after animation completes
-          setTimeout(() => {
-            inChange.classList.remove('count-change');
-          }, 500);
-          
-        } else if (peopleChange < 0) {
-          // People left
-          totalOutCount += Math.abs(peopleChange);
-          outCount.textContent = `-${Math.abs(peopleChange)}`;
-          outChange.textContent = `-${Math.abs(peopleChange)}`;
-          outChange.classList.add('count-change');
-          
-          if (enableAlertsCheckbox.checked) {
-            addAlert('info', `${Math.abs(peopleChange)} person(s) left the area`);
-          }
-          
-          // Remove animation class after animation completes
-          setTimeout(() => {
-            outChange.classList.remove('count-change');
-          }, 500);
-        }
-      }
-      
-      // Update people counter display
-      function updatePeopleCounter() {
-        currentPeople.textContent = peopleCount;
-        totalIn.textContent = totalInCount;
-        totalOut.textContent = totalOutCount;
-        
-        // Update change indicator
-        const change = peopleCount - previousPeopleCount;
-        if (change > 0) {
-          peopleChange.textContent = `+${change}`;
-          peopleChange.className = 'counter-change change-positive';
-        } else if (change < 0) {
-          peopleChange.textContent = `${change}`;
-          peopleChange.className = 'counter-change change-negative';
-        } else {
-          peopleChange.textContent = '+0';
-          peopleChange.className = 'counter-change';
-        }
-      }
-      
-      // Update object counts
-      function updateObjectCounts(detections) {
-        // Reset counts for this frame
-        const frameCounts = {};
-        detections.forEach(det => {
-          const objectName = det.name;
-          frameCounts[objectName] = (frameCounts[objectName] || 0) + 1;
-        });
-        
-        // Update persistent counts
-        Object.keys(frameCounts).forEach(obj => {
-          if (!objectCounts[obj]) {
-            objectCounts[obj] = 0;
-          }
-          objectCounts[obj] = frameCounts[obj]; // Use current frame count instead of accumulating
-        });
-      }
-      
-      // Update object grid display
-      function updateObjectGrid() {
-        const objectItems = objectGrid.querySelectorAll('.object-item');
-        objectItems.forEach(item => {
-          const objectName = item.dataset.object;
-          const count = objectCounts[objectName] || 0;
-          const countElement = item.querySelector('.object-count');
-          countElement.textContent = count;
-        });
       }
       
       // Draw detection boxes on overlay
@@ -1620,14 +1213,8 @@
           const x = x_center - width / 2;
           const y = y_center - height / 2;
           
-          // Choose color based on object type
-          let color = '#facc15'; // Default yellow
-          if (det.name === 'person') color = '#3b82f6'; // Blue for people
-          else if (det.name === 'car') color = '#ef4444'; // Red for cars
-          else if (det.name === 'bicycle') color = '#10b981'; // Green for bicycles
-          
           // Draw bounding box
-          ctx.strokeStyle = color;
+          ctx.strokeStyle = '#facc15';
           ctx.lineWidth = 2;
           ctx.strokeRect(x, y, width, height);
           
@@ -1636,7 +1223,7 @@
           ctx.font = '14px Arial';
           const textWidth = ctx.measureText(label).width;
           
-          ctx.fillStyle = color;
+          ctx.fillStyle = '#facc15';
           ctx.fillRect(x, y - 20, textWidth + 10, 20);
           
           // Draw label text
@@ -1653,34 +1240,6 @@
             addAlert('warning', `${det.name} detected with ${(det.confidence * 100).toFixed(1)}% confidence`);
           }
         });
-      }
-      
-      // Simulate detection for demo purposes
-      function simulateDetection() {
-        const mockDetections = [
-          { name: 'person', confidence: 0.92, box: [320, 240, 100, 200] },
-          { name: 'person', confidence: 0.87, box: [500, 200, 80, 180] },
-          { name: 'car', confidence: 0.78, box: [150, 300, 120, 80] },
-          { name: 'bicycle', confidence: 0.65, box: [400, 400, 60, 40] }
-        ];
-        
-        // Randomly modify detections for simulation
-        if (Math.random() > 0.7) {
-          if (mockDetections.length > 0 && Math.random() > 0.5) {
-            mockDetections.pop(); // Remove random detection
-          } else {
-            mockDetections.push({ 
-              name: 'person', 
-              confidence: 0.85, 
-              box: [Math.random() * 600, Math.random() * 400, 90, 180] 
-            });
-          }
-        }
-        
-        processDetections(mockDetections);
-        objectsCount.textContent = mockDetections.length;
-        detectionTime.textContent = `${Math.round(Math.random() * 50 + 50)}ms`;
-        drawDetections(mockDetections);
       }
       
       // Stop detection

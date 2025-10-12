@@ -31,4 +31,7 @@ app.get('*', (req, res) => {
 app.get('/',(req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/login.html'));
 });
+// app.get('/', (req, res) => {
+//     res.redirect('/login.html');
+// });
 app.listen(PORT, () => console.log(`Backend running at http://localhost:${PORT}`));

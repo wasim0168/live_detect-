@@ -559,87 +559,99 @@
 <body>
     <div class="container" id="container">
         <div class="form-container sign-in">
-            <form id="loginForm">
-                <h1>Sign In</h1>
-                <div class="social-icons">
-                    <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+            <div class="neon-form-container">
+                <div class="neon-border">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    
                 </div>
-                <span>or use your email password</span>
-                
-                <div class="input-group">
-                    <input type="email" id="loginEmail" placeholder=" " required>
-                    <label class="floating-label" for="loginEmail">Email</label>
-                </div>
-                
-                <div class="input-group">
-                    <input type="password" id="loginPassword" placeholder=" " required>
-                    <label class="floating-label" for="loginPassword">Password</label>
-                    <button type="button" class="password-toggle" id="toggleLoginPassword">
-                        <i class="far fa-eye"></i>
-                    </button>
-                </div>
-                
-                <div class="options">
-                    <label class="remember-me">
-                        <input type="checkbox" id="remember">
-                        Remember Me
-                    </label>
-                    <a href="#" class="forgot-password">Forgot Password?</a>
-                </div>
-                
-                <button type="submit">Sign In</button>
-            </form>
+                <form id="loginForm">
+                    <h1>Sign In</h1>
+                    <div class="social-icons">
+                        <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
+                        <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                        <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                    <span>or use your email password</span>
+                    
+                    <div class="input-group">
+                        <input type="email" id="loginEmail" placeholder=" " required>
+                        <label class="floating-label" for="loginEmail">Email</label>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" id="loginPassword" placeholder=" " required>
+                        <label class="floating-label" for="loginPassword">Password</label>
+                        <button type="button" class="password-toggle" id="toggleLoginPassword">
+                            <!-- <i class="far fa-eye"></i> -->
+                        </button>
+                    </div>
+                    
+                    <div class="options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="remember">
+                            Remember Me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit">Sign In</button>
+                </form>
+            </div>
         </div>
         
-        <div class="form-container sign-up">
-            <form id="signupForm">
-                <h1>Create Account</h1>
-                <div class="social-icons">
-                    <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+        <div class="form-container1 sign-up">
+            <div class="neon-form-container">
+                <div class="neon-border">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
-                <span>or use your email for registration</span>
-                
-                <div class="input-group">
-                    <input type="text" id="fullName" placeholder=" " required>
-                    <label class="floating-label" for="fullName">Full Name</label>
-                </div>
-                
-                <div class="input-group">
-                    <input type="email" id="signupEmail" placeholder=" " required>
-                    <label class="floating-label" for="signupEmail">Email</label>
-                </div>
-                
-                <div class="input-group">
-                    <input type="password" id="signupPassword" placeholder=" " required>
-                    <label class="floating-label" for="signupPassword">Password</label>
-                    <button type="button" class="password-toggle" id="toggleSignupPassword">
-                        <i class="far fa-eye"></i>
-                    </button>
-                    <div class="password-strength" id="passwordStrength">
-                        <div class="strength-bar" id="strengthBar"></div>
+                <form id="signupForm">
+                    <h1>Create Account</h1>
+                    <div class="social-icons">
+                        <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
+                        <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+                        <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
                     </div>
-                </div>
-                
-                <div class="input-group">
-                    <input type="password" id="confirmPassword" placeholder=" " required>
-                    <label class="floating-label" for="confirmPassword">Confirm Password</label>
-                </div>
-                
-                <div class="options">
-                    <label class="remember-me">
-                        <input type="checkbox" id="agreeTerms" required>
-                        I agree to the Terms and Conditions
-                    </label>
-                </div>
-                
-                <button type="submit">Sign Up</button>
-            </form>
+                    <span>or use your email for registration</span>
+                    
+                    <div class="input-group">
+                        <input type="text" id="fullName" placeholder=" " required>
+                        <label class="floating-label" for="fullName">Full Name</label>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="email" id="signupEmail" placeholder=" " required>
+                        <label class="floating-label" for="signupEmail">Email</label>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" id="signupPassword" placeholder=" " required>
+                        <label class="floating-label" for="signupPassword">Password</label>
+                        <button type="button" class="password-toggle" id="toggleSignupPassword">
+                            <!-- <i class="far fa-eye"></i> -->
+                        </button>
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="strength-bar" id="strengthBar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="agreeTerms" required>
+                            I agree to the Terms and Conditions
+                        </label>
+                    </div>
+                    
+                    <button type="submit">Sign Up</button>
+                </form>
+            </div>
         </div>
         
         <div class="toggle-container">
@@ -664,18 +676,8 @@
     </div>
 
     <div class="notification" id="notification"></div>
-    <script>
-        // Check if user is already logged in
-        function checkAuthStatus() {
-            const isLoggedIn = localStorage.getItem('rt-detect-auth');
-            const userData = localStorage.getItem('rt-detect-user');
-            
-            if (isLoggedIn === 'true' && userData) {
-                // User is already logged in, redirect to dashboard
-                window.location.href = 'index.html';
-            }
-        }
 
+    <script>
         // UI Interactions
         const container = document.getElementById('container');
         const registerBtn = document.getElementById('register');
@@ -762,141 +764,39 @@
             }
         });
         
-        // Form submission - Login
+        // Form submission
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
             if (email && password) {
-                // Simple authentication - in real app, this would call an API
-                if (authenticateUser(email, password)) {
-                    showNotification("Login successful! Redirecting...", "success");
-                    
-                    // Store auth data
-                    const userData = {
-                        email: email,
-                        name: email.split('@')[0],
-                        loginTime: new Date().toISOString()
-                    };
-                    
-                    localStorage.setItem('rt-detect-auth', 'true');
-                    localStorage.setItem('rt-detect-user', JSON.stringify(userData));
-                    
-                    // Redirect to dashboard after delay
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 1500);
-                } else {
-                    showNotification("Invalid email or password", "error");
-                }
+                showNotification("Login successful! Redirecting...");
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1000);
             } else {
                 showNotification("Please fill in all fields", "error");
             }
         });
         
-        // Form submission - Sign Up
         document.getElementById('signupForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const fullName = document.getElementById('fullName').value;
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
             
-            if (fullName && email && password && confirmPassword) {
-                if (password !== confirmPassword) {
-                    showNotification("Passwords do not match", "error");
-                    return;
-                }
-                
+            if (fullName && email && password) {
                 if (!document.getElementById('agreeTerms').checked) {
                     showNotification("Please agree to the terms and conditions", "error");
                     return;
                 }
                 
-                // Register user
-                if (registerUser(fullName, email, password)) {
-                    showNotification("Account created successfully! Redirecting...", "success");
-                    
-                    // Store auth data
-                    const userData = {
-                        email: email,
-                        name: fullName,
-                        loginTime: new Date().toISOString()
-                    };
-                    
-                    localStorage.setItem('rt-detect-auth', 'true');
-                    localStorage.setItem('rt-detect-user', JSON.stringify(userData));
-                    
-                    // Redirect to dashboard after delay
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 1500);
-                } else {
-                    showNotification("Email already exists", "error");
-                }
+                showNotification("Account created successfully!");
             } else {
                 showNotification("Please fill in all fields", "error");
             }
         });
-        
-        // Authentication functions
-        function authenticateUser(email, password) {
-            // Get users from localStorage or initialize empty array
-            const users = JSON.parse(localStorage.getItem('rt-detect-users') || '[]');
-            
-            // Check if user exists and password matches
-            const user = users.find(u => u.email === email && u.password === password);
-            return !!user;
-        }
-        
-        function registerUser(fullName, email, password) {
-            // Get users from localStorage or initialize empty array
-            const users = JSON.parse(localStorage.getItem('rt-detect-users') || '[]');
-            
-            // Check if user already exists
-            const existingUser = users.find(u => u.email === email);
-            if (existingUser) {
-                return false;
-            }
-            
-            // Add new user
-            users.push({
-                name: fullName,
-                email: email,
-                password: password, // In real app, this should be hashed
-                createdAt: new Date().toISOString()
-            });
-            
-            // Save users back to localStorage
-            localStorage.setItem('rt-detect-users', JSON.stringify(users));
-            return true;
-        }
-        
-        // Add some demo users for testing
-        function initializeDemoUsers() {
-            const users = JSON.parse(localStorage.getItem('rt-detect-users') || '[]');
-            
-            if (users.length === 0) {
-                // Add demo users
-                const demoUsers = [
-                    {
-                        name: "Demo User",
-                        email: "demo@rtdetect.com",
-                        password: "password123",
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        name: "Admin User",
-                        email: "admin@rtdetect.com",
-                        password: "admin123",
-                        createdAt: new Date().toISOString()
-                    }
-                ];
-                
-                localStorage.setItem('rt-detect-users', JSON.stringify(demoUsers));
-            }
-        }
         
         // Notification system
         function showNotification(message, type = "success") {
@@ -910,15 +810,6 @@
                 notification.style.display = 'none';
             }, 3000);
         }
-        
-        // Initialize
-        checkAuthStatus();
-        initializeDemoUsers();
-        
-        // Demo credentials hint
-        console.log('Demo credentials:');
-        console.log('Email: demo@rtdetect.com, Password: password123');
-        console.log('Email: admin@rtdetect.com, Password: admin123');
     </script>
 </body>
 </html>
