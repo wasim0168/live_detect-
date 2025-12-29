@@ -396,6 +396,27 @@
       color: var(--text-secondary);
     }
 
+    .setting-item input {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-weight: bold;
+    }
+    .setting-item input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 5px var(--accent);
+    }
+    .setting-item input::-webkit-inner-spin-button, .setting-item input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+   
+  
+
     .toggle-group {
       display: flex;
       flex-direction: column;
@@ -406,6 +427,18 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+    .toggle-item label {
+      font-size: 14px;
+      margin: 0;
+    }
+    .toggle-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      accent-color: var(--accent);
+      border-radius: 50%;
     }
 
     .toggle-item label {
@@ -983,10 +1016,10 @@
       <a href="index.html">Dashboard</a>
       <a href="live.html" class="active">Live</a>
       <a href="upload.html">Upload</a>
-      <a href="alerts.html">Alerts</a>
+      <!-- <a href="alerts.html">Alerts</a> -->
       <a href="logs.html">Logs</a>
-      <a href="settings.html">Settings</a>
-      <a href="users.html">Users</a>
+      <!-- <a href="settings.html">Settings</a> -->
+      <!-- <a href="users.html">Users</a> -->
       <a href="about.html">About</a>
       <a href="login.html" class="login-btn">Login</a>
     </div>
@@ -1785,6 +1818,9 @@
       // Initialize the page
       init();
     });
+
+    // FontAwesome Icons
+
   </script>
 </body>
 </html>

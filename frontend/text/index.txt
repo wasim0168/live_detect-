@@ -8,6 +8,7 @@
     /* CSS Variables */
     :root {
       --bg1: linear-gradient(135deg, #0f172a, #0ea5a5);
+      /* --bg1: #E86708; */
       --card: rgba(255, 255, 255, 0.08);
       --accent: #facc15;
       --text-primary: #e6eef8;
@@ -42,6 +43,7 @@
       justify-content: space-between;
       padding: 20px 40px;
       background: rgba(0, 0, 0, 0.3);
+      /* background-color: #E86708; */
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
       position: sticky;
@@ -87,15 +89,13 @@
       border: 1px solid rgba(250, 204, 21, 0.3);
     }
 
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .user-name {
-      color: var(--accent);
-      font-weight: 500;
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
     }
 
     /* Container */
@@ -104,6 +104,7 @@
       margin: 30px auto;
       padding: 30px;
       background: rgba(0, 0, 0, 0.25);
+      /* background-color: #965120; */
       border-radius: var(--border-radius);
       box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
     }
@@ -516,28 +517,30 @@
       font-size: 14px;
     }
 
-    /* Animations */
-    @keyframes countChange {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-
-    .count-update {
-      animation: countChange 0.5s ease-in-out;
-    }
-
     /* Responsive Design */
     @media (max-width: 768px) {
       .nav {
         padding: 15px 20px;
-        flex-direction: column;
-        gap: 15px;
       }
 
       .menu {
-        flex-wrap: wrap;
-        justify-content: center;
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .menu.active {
+        display: flex;
+      }
+
+      .mobile-menu-toggle {
+        display: block;
       }
 
       .container {
@@ -592,15 +595,14 @@
   <div class="nav">
     <div class="brand">RT-Detect</div>
     <div class="menu">
-        <a href="index.html" class="active">Dashboard</a>
+        <a href="index.html">Dashboard</a>
         <a href="live.html">Live</a>
         <a href="upload.html">Upload</a>
-        <a href="drowsiness.html">EyeDetectionSystem</a>
         <a href="alerts.html">Alerts</a>
         <a href="logs.html">Logs</a>
         <a href="settings.html">Settings</a>
         <div class="user-menu">
-            <span class="user-name" id="userName">Guest</span>
+            <span class="user-name"></span>
             <a href="#" id="logoutBtn" class="login-btn">Logout</a>
         </div>
     </div>
@@ -629,8 +631,8 @@
           <div class="live-card-header">
             <h3>Current Session</h3>
             <div class="live-indicator">
-              <div class="live-dot" id="sessionDot"></div>
-              <span id="sessionStatus">INACTIVE</span>
+              <div class="live-dot"></div>
+              <span>LIVE</span>
             </div>
           </div>
           <div class="data-grid">
@@ -657,7 +659,7 @@
           <div class="live-card-header">
             <h3>Today's Summary</h3>
             <div class="live-indicator">
-              <span id="todayStatus">LIVE</span>
+              <span>UPDATED</span>
             </div>
           </div>
           <div class="data-grid">
@@ -761,7 +763,7 @@
         </div>
       </div>
       
-      <div class="card" onclick="location.href='./croud.html'">
+      <div class="card" onclick="location.href='croud.html'">
         <div class="card-icon">👥</div>
         <h3>Crowd Counting</h3>
         <p>Monitor and analyze crowd density in real-time</p>
@@ -825,16 +827,35 @@
       <p>&copy; 2023 RT-Detect. All rights reserved.</p>
     </div>
   </footer>
-
+ <script src="js/auth.js"></script>
+ <script>
+    // Check authentication on page load
+    if (!protectRoute()) {
+        // Redirect to login if not authenticated
+        window.location.href = 'login.html';
+    }
+    
+    // Update UI with user info after page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        updateUserUI();
+        
+        // Add logout functionality to logout button if it exists
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+        }
+    });
+</script> 
   <script>
-    // Real-time Dashboard Data Management
-    class RealTimeDashboard {
+    // Data storage and management
+    class DashboardData {
       constructor() {
-        this.storageKey = 'rt-detect-realtime';
+        this.storageKey = 'rt-detect-dashboard';
         this.data = this.loadData();
         this.initializeData();
-        this.lastUpdate = Date.now();
-        this.updateInterval = null;
       }
 
       loadData() {
@@ -858,22 +879,18 @@
       initializeData() {
         const today = new Date().toDateString();
         
-        // Initialize main stats
         if (!this.data.stats) {
           this.data.stats = {
-            totalDetections: 0,
-            totalPeople: 0,
-            activeCameras: 0,
-            activeAlerts: 0,
-            todayDetections: 0,
-            todayPeople: 0,
-            todayAlerts: 0,
-            totalIn: 0,
-            totalOut: 0
+            totalDetections: 1247,
+            totalPeople: 86,
+            activeCameras: 4,
+            activeAlerts: 12,
+            todayDetections: 142,
+            todayPeople: 12,
+            todayAlerts: 3
           };
         }
 
-        // Initialize daily stats
         if (!this.data.dailyStats) {
           this.data.dailyStats = {};
         }
@@ -883,104 +900,76 @@
             detections: 0,
             people: 0,
             alerts: 0,
-            sessions: 0,
-            maxConfidence: 0
+            sessions: 0
           };
         }
 
-        // Initialize live session
+        if (!this.data.recentActivity) {
+          this.data.recentActivity = [];
+        }
+
         if (!this.data.liveSession) {
           this.data.liveSession = {
             isActive: false,
             startTime: null,
             peopleCount: 0,
             confidence: 0,
-            fps: 0,
-            duration: 0
+            fps: 0
           };
         }
 
-        // Initialize recent activity
-        if (!this.data.recentActivity) {
-          this.data.recentActivity = [];
-        }
-
         this.saveData();
       }
 
-      // Update from live detection data
-      updateFromLiveDetection(liveData) {
-        const today = new Date().toDateString();
-        
-        // Update live session
+      updateLiveSession(data) {
         this.data.liveSession = {
-          isActive: true,
-          startTime: this.data.liveSession.startTime || new Date().toISOString(),
-          peopleCount: liveData.peopleCount || 0,
-          confidence: liveData.confidence || 0,
-          fps: liveData.fps || 0,
-          duration: Math.floor((Date.now() - new Date(this.data.liveSession.startTime || Date.now()).getTime()) / 1000)
+          ...this.data.liveSession,
+          ...data,
+          lastUpdate: new Date().toISOString()
         };
-
-        // Update today's stats
-        if (liveData.peopleCount > 0) {
-          this.data.dailyStats[today].people += liveData.peopleCount;
-          this.data.stats.totalPeople += liveData.peopleCount;
+        
+        if (data.peopleCount > 0) {
+          this.addActivity(`Live detection: ${data.peopleCount} people detected`, 'info');
         }
-
-        if (liveData.detections && liveData.detections.length > 0) {
-          this.data.dailyStats[today].detections += liveData.detections.length;
-          this.data.stats.totalDetections += liveData.detections.length;
-        }
-
-        // Update max confidence
-        if (liveData.confidence > this.data.dailyStats[today].maxConfidence) {
-          this.data.dailyStats[today].maxConfidence = liveData.confidence;
-        }
-
-        // Add activity
-        if (liveData.peopleCount > 0) {
-          this.addActivity(`Live detection: ${liveData.peopleCount} people detected`, 'info');
-        }
-
+        
         this.saveData();
-        this.updateDisplay();
       }
 
-      // Update from people counter
-      updateFromPeopleCounter(counterData) {
+      addDetection(count, confidence) {
         const today = new Date().toDateString();
         
-        this.data.stats.totalIn = counterData.totalIn || 0;
-        this.data.stats.totalOut = counterData.totalOut || 0;
+        this.data.stats.totalDetections += count;
+        this.data.dailyStats[today].detections += count;
         
-        if (counterData.peopleIn > 0) {
-          this.data.dailyStats[today].people += counterData.peopleIn;
-          this.data.stats.totalPeople += counterData.peopleIn;
-          this.addActivity(`${counterData.peopleIn} person(s) entered`, 'success');
-        }
-
-        if (counterData.peopleOut > 0) {
-          this.addActivity(`${counterData.peopleOut} person(s) left`, 'info');
+        if (!this.data.dailyStats[today].maxConfidence || confidence > this.data.dailyStats[today].maxConfidence) {
+          this.data.dailyStats[today].maxConfidence = confidence;
         }
 
         this.saveData();
         this.updateDisplay();
       }
 
-      // Add alert
-      addAlert(message, severity = 'warning') {
+      addPeople(count) {
+        const today = new Date().toDateString();
+        
+        this.data.stats.totalPeople += count;
+        this.data.dailyStats[today].people += count;
+        
+        this.saveData();
+        this.updateDisplay();
+      }
+
+      addAlert(message) {
         const today = new Date().toDateString();
         
         this.data.stats.activeAlerts++;
         this.data.dailyStats[today].alerts++;
         
-        this.addActivity(message, severity);
+        this.addActivity(message, 'alert');
         this.saveData();
         this.updateDisplay();
       }
 
-      // Add activity
       addActivity(message, type = 'info') {
         const activity = {
           id: Date.now(),
@@ -1000,69 +989,49 @@
         this.updateActivityDisplay();
       }
 
-      // Update all displays
       updateDisplay() {
-        this.updateLiveData();
-        this.updateStatsOverview();
-        this.updateActivityDisplay();
+        // Update stats overview
+        document.getElementById('activeCameras').textContent = this.data.stats.activeCameras;
+        document.getElementById('activeAlerts').textContent = this.data.stats.activeAlerts;
+        document.getElementById('totalDetections').textContent = this.formatNumber(this.data.stats.totalDetections);
+        document.getElementById('totalPeople').textContent = this.formatNumber(this.data.stats.totalPeople);
+
+        // Update change indicators
+        document.getElementById('camerasChange').textContent = `+${this.data.stats.activeCameras - 3} today`;
+        document.getElementById('alertsChange').textContent = `+${this.data.stats.todayAlerts} today`;
+        document.getElementById('detectionsChange').textContent = `+${this.data.stats.todayDetections} today`;
+        document.getElementById('peopleChange').textContent = `+${this.data.stats.todayPeople} today`;
+
+        // Update live data
+        this.updateLiveDataDisplay();
       }
 
-      // Update live data section
-      updateLiveData() {
-        const today = new Date().toDateString();
-        const todayStats = this.data.dailyStats[today] || { detections: 0, people: 0, alerts: 0, maxConfidence: 0 };
-
-        // Current Session
-        document.getElementById('currentPeople').textContent = this.data.liveSession.peopleCount;
-        document.getElementById('currentConfidence').textContent = `${Math.round(this.data.liveSession.confidence * 100)}%`;
-        document.getElementById('currentFPS').textContent = this.data.liveSession.fps;
-        document.getElementById('sessionDuration').textContent = `${this.data.liveSession.duration}s`;
-
-        // Session status
-        const sessionDot = document.getElementById('sessionDot');
-        const sessionStatus = document.getElementById('sessionStatus');
-        if (this.data.liveSession.isActive) {
-          sessionDot.style.background = 'var(--success)';
-          sessionStatus.textContent = 'LIVE';
-        } else {
-          sessionDot.style.background = 'var(--danger)';
-          sessionStatus.textContent = 'INACTIVE';
-        }
-
-        // Today's Summary
-        document.getElementById('todayDetections').textContent = todayStats.detections;
-        document.getElementById('todayAlerts').textContent = todayStats.alerts;
-        document.getElementById('todayPeople').textContent = todayStats.people;
-        document.getElementById('todayAccuracy').textContent = `${Math.round(todayStats.maxConfidence * 100)}%`;
-      }
-
-      // Update stats overview
-      updateStatsOverview() {
+      updateLiveDataDisplay() {
         const today = new Date().toDateString();
         const todayStats = this.data.dailyStats[today] || { detections: 0, people: 0, alerts: 0 };
 
-        // Active Cameras
-        const activeCams = this.data.liveSession.isActive ? 1 : 0;
-        document.getElementById('activeCameras').textContent = activeCams;
-        document.getElementById('camerasChange').textContent = `+${activeCams} today`;
+        // Current session data
+        document.getElementById('currentPeople').textContent = this.data.liveSession.peopleCount || 0;
+        document.getElementById('currentConfidence').textContent = `${Math.round((this.data.liveSession.confidence || 0) * 100)}%`;
+        document.getElementById('currentFPS').textContent = this.data.liveSession.fps || 0;
+        
+        // Session duration
+        if (this.data.liveSession.startTime) {
+          const duration = Math.floor((Date.now() - new Date(this.data.liveSession.startTime).getTime()) / 1000);
+          document.getElementById('sessionDuration').textContent = `${duration}s`;
+        }
 
-        // Active Alerts
-        document.getElementById('activeAlerts').textContent = this.data.stats.activeAlerts;
-        document.getElementById('alertsChange').textContent = `+${todayStats.alerts} today`;
-
-        // Total Detections
-        document.getElementById('totalDetections').textContent = this.formatNumber(this.data.stats.totalDetections);
-        document.getElementById('detectionsChange').textContent = `+${todayStats.detections} today`;
-
-        // Crowd Count
-        document.getElementById('totalPeople').textContent = this.formatNumber(this.data.stats.totalPeople);
-        document.getElementById('peopleChange').textContent = `+${todayStats.people} today`;
+        // Today's summary
+        document.getElementById('todayDetections').textContent = todayStats.detections;
+        document.getElementById('todayAlerts').textContent = todayStats.alerts;
+        document.getElementById('todayPeople').textContent = todayStats.people;
+        document.getElementById('todayAccuracy').textContent = todayStats.maxConfidence ? 
+          `${Math.round(todayStats.maxConfidence * 100)}%` : '0%';
       }
 
-      // Update activity display
       updateActivityDisplay() {
         const container = document.getElementById('recentActivity');
-        const activities = this.data.recentActivity.slice(0, 5);
+        const activities = this.data.recentActivity.slice(0, 5); // Show last 5 activities
 
         container.innerHTML = activities.map(activity => `
           <div class="activity-item">
@@ -1119,65 +1088,10 @@
       capitalize(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
       }
-
-      // Start real-time updates
-      startRealTimeUpdates() {
-        this.updateInterval = setInterval(() => {
-          this.checkForUpdates();
-        }, 2000); // Update every 2 seconds
-      }
-
-      // Stop real-time updates
-      stopRealTimeUpdates() {
-        if (this.updateInterval) {
-          clearInterval(this.updateInterval);
-          this.updateInterval = null;
-        }
-      }
-
-      // Check for updates from other tabs/pages
-      checkForUpdates() {
-        // Listen for storage events from live detection
-        this.checkLiveDetectionUpdates();
-        
-        // Update session duration if active
-        if (this.data.liveSession.isActive) {
-          this.data.liveSession.duration = Math.floor(
-            (Date.now() - new Date(this.data.liveSession.startTime).getTime()) / 1000
-          );
-          this.updateDisplay();
-        }
-      }
-
-      // Check for live detection updates
-      checkLiveDetectionUpdates() {
-        try {
-          const liveData = localStorage.getItem('rt-detect-live-session');
-          const peopleData = localStorage.getItem('rt-detect-people-counter');
-          
-          if (liveData) {
-            const parsedData = JSON.parse(liveData);
-            if (parsedData.timestamp > this.lastUpdate) {
-              this.updateFromLiveDetection(parsedData);
-              this.lastUpdate = parsedData.timestamp;
-            }
-          }
-
-          if (peopleData) {
-            const parsedData = JSON.parse(peopleData);
-            if (parsedData.timestamp > this.lastUpdate) {
-              this.updateFromPeopleCounter(parsedData);
-              this.lastUpdate = parsedData.timestamp;
-            }
-          }
-        } catch (error) {
-          console.error('Error checking for updates:', error);
-        }
-      }
     }
 
     // Initialize dashboard
-    const dashboard = new RealTimeDashboard();
+    const dashboard = new DashboardData();
 
     // Update date and time
     function updateDateTime() {
@@ -1189,112 +1103,63 @@
       document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', timeOptions);
     }
 
-    // Simulate live data for demo (remove in production)
+    // Simulate live data updates
     function simulateLiveData() {
-      if (Math.random() < 0.4) { // 40% chance to simulate detection
+      if (Math.random() < 0.3) { // 30% chance to update live session
         const liveData = {
-          peopleCount: Math.floor(Math.random() * 15),
+          isActive: true,
+          startTime: dashboard.data.liveSession.startTime || new Date().toISOString(),
+          peopleCount: Math.floor(Math.random() * 20),
           confidence: Math.random() * 0.3 + 0.7, // 0.7 to 1.0
-          fps: Math.floor(Math.random() * 10) + 20, // 20-30 FPS
-          detections: Array(Math.floor(Math.random() * 8)).fill().map(() => ({
-            name: 'person',
-            confidence: Math.random() * 0.3 + 0.7
-          })),
-          timestamp: Date.now()
+          fps: Math.floor(Math.random() * 10) + 20 // 20-30 FPS
         };
         
-        dashboard.updateFromLiveDetection(liveData);
-      }
-
-      if (Math.random() < 0.2) { // 20% chance to simulate people movement
-        const counterData = {
-          peopleIn: Math.random() > 0.7 ? 1 : 0,
-          peopleOut: Math.random() > 0.8 ? 1 : 0,
-          totalIn: dashboard.data.stats.totalIn + (Math.random() > 0.7 ? 1 : 0),
-          totalOut: dashboard.data.stats.totalOut + (Math.random() > 0.8 ? 1 : 0),
-          timestamp: Date.now()
-        };
+        dashboard.updateLiveSession(liveData);
         
-        dashboard.updateFromPeopleCounter(counterData);
-      }
-
-      if (Math.random() < 0.1) { // 10% chance to generate alert
-        const alerts = [
-          'Motion detected in restricted area',
-          'High crowd density detected',
-          'Unknown object detected',
-          'System performance alert'
-        ];
-        const randomAlert = alerts[Math.floor(Math.random() * alerts.length)];
-        dashboard.addAlert(randomAlert);
-      }
-    }
-
-    // Authentication functions
-    function protectRoute() {
-      const user = localStorage.getItem('rt-detect-user');
-      return !!user;
-    }
-
-    function updateUserUI() {
-      const user = localStorage.getItem('rt-detect-user');
-      const userNameElement = document.getElementById('userName');
-      
-      if (user && userNameElement) {
-        const userData = JSON.parse(user);
-        userNameElement.textContent = userData.name || 'User';
-      }
-    }
-
-    function logout() {
-      localStorage.removeItem('rt-detect-user');
-      window.location.href = 'login.html';
-    }
-
-    // Initialize dashboard when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-      // Check authentication
-      if (!protectRoute()) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      // Update user UI
-      updateUserUI();
-
-      // Set up logout button
-      const logoutBtn = document.getElementById('logoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          logout();
-        });
-      }
-
-      // Initialize dashboard
-      updateDateTime();
-      dashboard.updateDisplay();
-      dashboard.startRealTimeUpdates();
-
-      // Start simulation for demo (remove in production)
-      const simulationInterval = setInterval(simulateLiveData, 5000);
-
-      // Update time every second
-      setInterval(updateDateTime, 1000);
-
-      // Listen for storage events from other tabs
-      window.addEventListener('storage', function(e) {
-        if (e.key === 'rt-detect-live-session' || e.key === 'rt-detect-people-counter') {
-          dashboard.checkForUpdates();
+        // Occasionally add detections and alerts
+        if (Math.random() < 0.2) {
+          dashboard.addDetection(1, liveData.confidence);
         }
-      });
+        
+        if (Math.random() < 0.1 && liveData.peopleCount > 10) {
+          dashboard.addAlert(`High crowd density detected: ${liveData.peopleCount} people`);
+        }
+      }
+      
+      dashboard.updateDisplay();
+    }
 
-      // Add welcome activity
-      setTimeout(() => {
-        dashboard.addActivity('Real-time dashboard initialized', 'success');
-        dashboard.addActivity('Monitoring detection sessions', 'info');
-      }, 1000);
+    // Mobile menu toggle
+    document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+      document.querySelector('.menu').classList.toggle('active');
     });
+
+    // Initialize and start updates
+    updateDateTime();
+    dashboard.updateDisplay();
+    dashboard.updateActivityDisplay();
+
+    // Update time every second
+    setInterval(updateDateTime, 1000);
+
+    // Update live data every 3 seconds
+    setInterval(simulateLiveData, 3000);
+
+    // Listen for storage events from other tabs
+    window.addEventListener('storage', function(e) {
+      if (e.key === dashboard.storageKey) {
+        dashboard.data = JSON.parse(e.newValue);
+        dashboard.updateDisplay();
+        dashboard.updateActivityDisplay();
+      }
+    });
+
+    // Add sample initial activities
+    setTimeout(() => {
+      dashboard.addActivity('System monitoring initialized', 'info');
+      dashboard.addActivity('Live detection session started', 'success');
+      dashboard.addActivity('Camera 1 connected successfully', 'info');
+    }, 1000);
   </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-// auth.js - Authentication utilities
+// js/auth.js - Authentication utilities
 
 // Check if user is authenticated
 function isAuthenticated() {
@@ -40,5 +40,31 @@ function updateUserUI() {
                 element.textContent = user.email;
             }
         });
+    }
+}
+
+// Initialize demo users
+function initializeDemoUsers() {
+    const users = JSON.parse(localStorage.getItem('rt-detect-users') || '[]');
+    
+    if (users.length === 0) {
+        // Add demo users
+        const demoUsers = [
+            {
+                name: "Demo User",
+                email: "demo@rtdetect.com",
+                password: "password123",
+                createdAt: new Date().toISOString()
+            },
+            {
+                name: "Admin User",
+                email: "admin@rtdetect.com",
+                password: "admin123",
+                createdAt: new Date().toISOString()
+            }
+        ];
+        
+        localStorage.setItem('rt-detect-users', JSON.stringify(demoUsers));
+        console.log('Demo users initialized');
     }
 }

@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eye Detection Alert - RT-Detect</title>
+    <style>
+        /* CSS Variables */
+        :root {
+            --bg1: linear-gradient(135deg, #0f172a, #0ea5a5);
+            --card: rgba(255, 255, 255, 0.08);
+            --accent: #facc15;
+            --text-primary: #e6eef8;
+            --text-secondary: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        /* Reset and Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg1);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            font-weight: 700;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand::before {
+            content: "🛡️";
+            font-size: 28px;
+        }
+
+        .menu {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .menu a {
+            color: inherit;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .menu a.active, .menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--accent);
+        }
+
+        .login-btn {
+            background: rgba(250, 204, 21, 0.15);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
+        }
+
+        /* Header Section */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dashboard-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(to right, #facc15, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Video Container */
+        .video-container {
+            background: var(--card);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #000;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .video-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 40px;
+        }
+
+        .video-placeholder::before {
+            content: "👁️";
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Status Panel */
+        .status-panel {
+            background: var(--card);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .status-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Eye Status */
+        .eye-status {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .eye-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .eye-open {
+            color: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .eye-closed {
+            color: var(--danger);
+            animation: blink 0.5s ease-in-out;
+        }
+
+        .status-text {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .status-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Alert Light */
+        .alert-light {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background: #2d3748;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-light::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            background: currentColor;
+            border-radius: 50%;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .alert-light.active::after {
+            opacity: 1;
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .alert-light.green {
+            color: var(--success);
+        }
+
+        .alert-light.red {
+            color: var(--danger);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #e6b800;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            background: var(--card);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setting-group label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .setting-group select, .setting-group input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .setting-group input[type="range"] {
+            padding: 0;
+        }
+
+        .toggle-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .toggle-item label {
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* Alerts History */
+        .alerts-history {
+            background: var(--card);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .alerts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .alerts-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .alerts-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: var(--transition);
+        }
+
+        .alert-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .alert-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-content p {
+            margin: 0 0 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 12px;
+        }
+
+        .alert-close:hover {
+            color: var(--text-primary);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .empty-state::before {
+            content: "🔕";
+            font-size: 36px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                transform: scaleY(1);
+            }
+            50% {
+                transform: scaleY(0.1);
+            }
+        }
+
+        @keyframes alertPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .alert-pulse {
+            animation: alertPulse 1s infinite;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-section h4 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .footer-section p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .footer-section a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 10px;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .menu {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .container {
+                padding: 20px;
+                margin: 20px;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 15px;
+                margin: 15px;
+            }
+
+            .video-wrapper {
+                height: 300px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav">
+        <div class="brand">RT-Detect</div>
+        <div class="menu">
+            <a href="index.html">Dashboard</a>
+            <a href="live.html">Live</a>
+            <a href="upload.html">Upload</a>
+            <a href="alerts.html">Alerts</a>
+            <a href="logs.html">Logs</a>
+            <a href="eye-detection.html" class="active">Eye Detection</a>
+            <a href="settings.html">Settings</a>
+            <a href="login.html" class="login-btn">Login</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <h1>Eye Detection & Alert System</h1>
+            <div class="connection-status">
+                <span class="status-indicator ready" id="statusIndicator"></span>
+                <span id="statusText">Ready to Connect</span>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Video Feed -->
+            <div class="video-container">
+                <h2 style="margin-bottom: 15px;">Live Camera Feed</h2>
+                <div class="video-wrapper">
+                    <video id="video" autoplay playsinline muted></video>
+                    <canvas id="overlay"></canvas>
+                    <div class="video-placeholder" id="videoPlaceholder">
+                        <p>Camera feed will appear here</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Click "Start Detection" to begin eye monitoring</p>
+                    </div>
+                </div>
+                <div class="controls" style="margin-top: 20px;">
+                    <button class="btn btn-primary" id="startBtn">
+                        <span>Start Detection</span>
+                    </button>
+                    <button class="btn btn-secondary" id="stopBtn" disabled>
+                        Stop Detection
+                    </button>
+                </div>
+            </div>
+
+            <!-- Status Panel -->
+            <div class="status-panel">
+                <div class="status-header">
+                    <h2>Eye Status Monitor</h2>
+                    <div class="alert-light" id="alertLight"></div>
+                </div>
+
+                <div class="eye-status">
+                    <div class="eye-icon" id="eyeIcon">👁️</div>
+                    <div class="status-text" id="statusText">Monitoring Ready</div>
+                    <div class="status-description" id="statusDescription">Waiting for eye detection to start</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value" id="totalAlerts">0</span>
+                        <span class="stat-label">Total Alerts</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="eyeClosedTime">0s</span>
+                        <span class="stat-label">Eyes Closed Time</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="detectionAccuracy">0%</span>
+                        <span class="stat-label">Detection Accuracy</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="frameRate">0</span>
+                        <span class="stat-label">Frame Rate</span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-secondary" id="testSoundBtn">
+                        Test Alert Sound
+                    </button>
+                    <button class="btn btn-secondary" id="resetStatsBtn">
+                        Reset Statistics
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel">
+            <h2 style="margin-bottom: 20px;">Detection Settings</h2>
+            <div class="settings-grid">
+                <div class="setting-group">
+                    <label for="alertThreshold">Alert Threshold (seconds)</label>
+                    <input type="range" id="alertThreshold" min="1" max="10" value="3">
+                    <span style="text-align: center; margin-top: 5px; font-size: 12px; color: var(--text-secondary);">
+                        Alert after: <span id="thresholdValue">3</span> seconds
+                    </span>
+                </div>
+
+                <div class="setting-group">
+                    <label for="soundVolume">Alert Sound Volume</label>
+                    <input type="range" id="soundVolume" min="0" max="100" value="50">
+                    <span style="text-align: center; margin-top: 5px; font-size: 12px; color: var(--text-secondary);">
+                        Volume: <span id="volumeValue">50</span>%
+                    </span>
+                </div>
+
+                <div class="setting-group">
+                    <label for="alertSound">Alert Sound</label>
+                    <select id="alertSound">
+                        <option value="beep">Beep Sound</option>
+                        <option value="alert">Alert Tone</option>
+                        <option value="warning">Warning Sound</option>
+                        <option value="bell">Bell Ring</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="toggle-group" style="margin-top: 20px;">
+                <div class="toggle-item">
+                    <input type="checkbox" id="enableSound" checked>
+                    <label for="enableSound">Enable Alert Sounds</label>
+                </div>
+                <div class="toggle-item">
+                    <input type="checkbox" id="enableVisualAlert" checked>
+                    <label for="enableVisualAlert">Enable Visual Alerts</label>
+                </div>
+                <div class="toggle-item">
+                    <input type="checkbox" id="enableAutoStart">
+                    <label for="enableAutoStart">Auto-start Detection</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts History -->
+        <div class="alerts-history">
+            <div class="alerts-header">
+                <h2>Alert History</h2>
+                <button class="btn btn-text" id="clearAlerts">Clear All</button>
+            </div>
+            <div class="alerts-list" id="alertsList">
+                <div class="empty-state">
+                    <p>No alerts yet</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Eye closure alerts will appear here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>RT-Detect</h4>
+                <p>Advanced real-time detection and analytics platform</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="live.html">Live Detection</a>
+                <a href="upload.html">Upload Files</a>
+                <a href="alerts.html">Alerts</a>
+                <a href="eye-detection.html">Eye Detection</a>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <a href="about.html">Documentation</a>
+                <a href="about.html">Contact Us</a>
+                <a href="about.html">FAQ</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 RT-Detect. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Eye Detection System
+        class EyeDetectionSystem {
+            constructor() {
+                this.isDetecting = false;
+                this.detectionInterval = null;
+                this.stream = null;
+                this.audioContext = null;
+                this.alertSound = null;
+                
+                // Statistics
+                this.stats = {
+                    totalAlerts: 0,
+                    eyeClosedStartTime: null,
+                    totalClosedTime: 0,
+                    frameCount: 0,
+                    lastFpsUpdate: Date.now()
+                };
+
+                // State
+                this.eyeState = 'unknown'; // 'open', 'closed', 'unknown'
+                this.alertActive = false;
+                
+                // Settings
+                this.settings = {
+                    alertThreshold: 3, // seconds
+                    soundVolume: 0.5,
+                    enableSound: true,
+                    enableVisualAlert: true,
+                    alertSound: 'beep'
+                };
+
+                this.initializeElements();
+                this.loadSettings();
+                this.setupEventListeners();
+            }
+
+            initializeElements() {
+                // Video elements
+                this.video = document.getElementById('video');
+                this.overlay = document.getElementById('overlay');
+                this.videoPlaceholder = document.getElementById('videoPlaceholder');
+                
+                // Control buttons
+                this.startBtn = document.getElementById('startBtn');
+                this.stopBtn = document.getElementById('stopBtn');
+                this.testSoundBtn = document.getElementById('testSoundBtn');
+                this.resetStatsBtn = document.getElementById('resetStatsBtn');
+                this.clearAlerts = document.getElementById('clearAlerts');
+                
+                // Status elements
+                this.statusIndicator = document.getElementById('statusIndicator');
+                this.statusText = document.getElementById('statusText');
+                this.eyeIcon = document.getElementById('eyeIcon');
+                this.alertLight = document.getElementById('alertLight');
+                this.statusDescription = document.getElementById('statusDescription');
+                
+                // Stats elements
+                this.totalAlerts = document.getElementById('totalAlerts');
+                this.eyeClosedTime = document.getElementById('eyeClosedTime');
+                this.detectionAccuracy = document.getElementById('detectionAccuracy');
+                this.frameRate = document.getElementById('frameRate');
+                
+                // Settings elements
+                this.alertThreshold = document.getElementById('alertThreshold');
+                this.thresholdValue = document.getElementById('thresholdValue');
+                this.soundVolume = document.getElementById('soundVolume');
+                this.volumeValue = document.getElementById('volumeValue');
+                this.alertSound = document.getElementById('alertSound');
+                this.enableSound = document.getElementById('enableSound');
+                this.enableVisualAlert = document.getElementById('enableVisualAlert');
+                this.enableAutoStart = document.getElementById('enableAutoStart');
+                
+                // Alerts list
+                this.alertsList = document.getElementById('alertsList');
+            }
+
+            setupEventListeners() {
+                // Control buttons
+                this.startBtn.addEventListener('click', () => this.startDetection());
+                this.stopBtn.addEventListener('click', () => this.stopDetection());
+                this.testSoundBtn.addEventListener('click', () => this.testAlertSound());
+                this.resetStatsBtn.addEventListener('click', () => this.resetStatistics());
+                this.clearAlerts.addEventListener('click', () => this.clearAlertHistory());
+
+                // Settings changes
+                this.alertThreshold.addEventListener('input', () => this.updateSettings());
+                this.soundVolume.addEventListener('input', () => this.updateSettings());
+                this.alertSound.addEventListener('change', () => this.updateSettings());
+                this.enableSound.addEventListener('change', () => this.updateSettings());
+                this.enableVisualAlert.addEventListener('change', () => this.updateSettings());
+                this.enableAutoStart.addEventListener('change', () => this.updateSettings());
+
+                // Initialize audio context on user interaction
+                document.addEventListener('click', () => this.initializeAudioContext(), { once: true });
+            }
+
+            async initializeAudioContext() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    await this.audioContext.resume();
+                } catch (error) {
+                    console.warn('Audio context not supported:', error);
+                }
+            }
+
+            loadSettings() {
+                try {
+                    const saved = localStorage.getItem('eye-detection-settings');
+                    if (saved) {
+                        this.settings = { ...this.settings, ...JSON.parse(saved) };
+                        this.applySettings();
+                    }
+                } catch (error) {
+                    console.error('Error loading settings:', error);
+                }
+            }
+
+            saveSettings() {
+                try {
+                    localStorage.setItem('eye-detection-settings', JSON.stringify(this.settings));
+                } catch (error) {
+                    console.error('Error saving settings:', error);
+                }
+            }
+
+            updateSettings() {
+                this.settings.alertThreshold = parseInt(this.alertThreshold.value);
+                this.settings.soundVolume = parseInt(this.soundVolume.value) / 100;
+                this.settings.alertSound = this.alertSound.value;
+                this.settings.enableSound = this.enableSound.checked;
+                this.settings.enableVisualAlert = this.enableVisualAlert.checked;
+                
+                this.thresholdValue.textContent = this.settings.alertThreshold;
+                this.volumeValue.textContent = parseInt(this.soundVolume.value);
+                
+                this.saveSettings();
+            }
+
+            applySettings() {
+                this.alertThreshold.value = this.settings.alertThreshold;
+                this.soundVolume.value = this.settings.soundVolume * 100;
+                this.alertSound.value = this.settings.alertSound;
+                this.enableSound.checked = this.settings.enableSound;
+                this.enableVisualAlert.checked = this.settings.enableVisualAlert;
+                
+                this.thresholdValue.textContent = this.settings.alertThreshold;
+                this.volumeValue.textContent = parseInt(this.soundVolume.value);
+            }
+
+            async startDetection() {
+                if (this.isDetecting) return;
+
+                try {
+                    // Request camera access
+                    this.stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            width: { ideal: 640 },
+                            height: { ideal: 480 },
+                            frameRate: { ideal: 30 }
+                        } 
+                    });
+                    
+                    this.video.srcObject = this.stream;
+                    this.videoPlaceholder.style.display = 'none';
+                    this.video.style.display = 'block';
+                    this.overlay.style.display = 'block';
+                    
+                    // Wait for video to be ready
+                    this.video.onloadedmetadata = () => {
+                        this.overlay.width = this.video.videoWidth;
+                        this.overlay.height = this.video.videoHeight;
+                        
+                        this.isDetecting = true;
+                        this.startBtn.disabled = true;
+                        this.stopBtn.disabled = false;
+                        
+                        this.updateStatus('active', 'Detection Active');
+                        this.addAlert('info', 'Eye detection started');
+                        
+                        // Start detection loop
+                        this.detectionInterval = setInterval(() => {
+                            this.performEyeDetection();
+                            this.updateStats();
+                        }, 100); // 10 FPS for eye detection
+                    };
+                    
+                } catch (error) {
+                    console.error('Error accessing camera:', error);
+                    this.updateStatus('error', 'Camera Error');
+                    this.addAlert('error', `Camera access denied: ${error.message}`);
+                }
+            }
+
+            performEyeDetection() {
+                if (!this.isDetecting) return;
+
+                this.stats.frameCount++;
+                
+                // Simulate eye detection (in real implementation, this would use ML model)
+                this.simulateEyeDetection();
+                
+                // Update overlay with detection results
+                this.drawDetectionOverlay();
+            }
+
+            simulateEyeDetection() {
+                // Simulate random eye state changes for demo
+                // In real implementation, this would use face/eye detection ML model
+                const random = Math.random();
+                
+                if (random < 0.02) { // 2% chance to change state
+                    if (this.eyeState === 'open') {
+                        this.setEyeState('closed');
+                    } else {
+                        this.setEyeState('open');
+                    }
+                } else if (this.eyeState === 'unknown') {
+                    this.setEyeState('open');
+                }
+
+                // Simulate detection accuracy
+                this.stats.detectionAccuracy = 85 + Math.random() * 10; // 85-95% accuracy
+            }
+
+            setEyeState(state) {
+                if (this.eyeState === state) return;
+
+                const previousState = this.eyeState;
+                this.eyeState = state;
+
+                // Update UI based on eye state
+                this.updateEyeStatus();
+
+                // Handle state transitions
+                if (state === 'closed' && previousState === 'open') {
+                    this.onEyesClosed();
+                } else if (state === 'open' && previousState === 'closed') {
+                    this.onEyesOpened();
+                }
+            }
+
+            updateEyeStatus() {
+                const ctx = this.overlay.getContext('2d');
+                ctx.clearRect(0, 0, this.overlay.width, this.overlay.height);
+
+                switch (this.eyeState) {
+                    case 'open':
+                        this.eyeIcon.textContent = '👁️';
+                        this.eyeIcon.className = 'eye-icon eye-open';
+                        this.statusText.textContent = 'Eyes Open';
+                        this.statusDescription.textContent = 'Normal - Monitoring active';
+                        this.alertLight.className = 'alert-light green active';
+                        break;
+                        
+                    case 'closed':
+                        this.eyeIcon.textContent = '🛑';
+                        this.eyeIcon.className = 'eye-icon eye-closed';
+                        this.statusText.textContent = 'Eyes Closed';
+                        this.alertLight.className = 'alert-light red active alert-pulse';
+                        
+                        const closedTime = this.stats.eyeClosedStartTime ? 
+                            Math.round((Date.now() - this.stats.eyeClosedStartTime) / 1000) : 0;
+                        this.statusDescription.textContent = `Closed for ${closedTime}s - Alert in ${this.settings.alertThreshold - closedTime}s`;
+                        break;
+                        
+                    default:
+                        this.eyeIcon.textContent = '❓';
+                        this.eyeIcon.className = 'eye-icon';
+                        this.statusText.textContent = 'Monitoring Ready';
+                        this.statusDescription.textContent = 'Waiting for eye detection';
+                        this.alertLight.className = 'alert-light';
+                        break;
+                }
+            }
+
+            onEyesClosed() {
+                this.stats.eyeClosedStartTime = Date.now();
+                this.addAlert('warning', 'Eyes detected as closed');
+            }
+
+            onEyesOpened() {
+                if (this.stats.eyeClosedStartTime) {
+                    const closedDuration = (Date.now() - this.stats.eyeClosedStartTime) / 1000;
+                    this.stats.totalClosedTime += closedDuration;
+                    this.stats.eyeClosedStartTime = null;
+                    
+                    if (closedDuration >= this.settings.alertThreshold) {
+                        this.addAlert('success', `Eyes opened after ${closedDuration.toFixed(1)}s closure`);
+                    }
+                }
+                
+                // Stop any active alert
+                this.stopAlert();
+            }
+
+            checkAlertCondition() {
+                if (this.eyeState === 'closed' && this.stats.eyeClosedStartTime) {
+                    const closedDuration = (Date.now() - this.stats.eyeClosedStartTime) / 1000;
+                    
+                    if (closedDuration >= this.settings.alertThreshold && !this.alertActive) {
+                        this.triggerAlert();
+                    }
+                }
+            }
+
+            triggerAlert() {
+                this.alertActive = true;
+                this.stats.totalAlerts++;
+                
+                // Play alert sound
+                if (this.settings.enableSound) {
+                    this.playAlertSound();
+                }
+                
+                // Visual alert
+                if (this.settings.enableVisualAlert) {
+                    this.triggerVisualAlert();
+                }
+                
+                this.addAlert('error', `ALERT: Eyes closed for ${this.settings.alertThreshold}s+`);
+                
+                // Update stats
+                this.updateStatsDisplay();
+            }
+
+            stopAlert() {
+                this.alertActive = false;
+                this.alertLight.classList.remove('alert-pulse');
+            }
+
+            playAlertSound() {
+                if (!this.audioContext) return;
+
+                try {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    
+                    // Configure sound based on selected type
+                    switch (this.settings.alertSound) {
+                        case 'beep':
+                            oscillator.type = 'sine';
+                            oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
+                            break;
+                        case 'alert':
+                            oscillator.type = 'square';
+                            oscillator.frequency.setValueAtTime(600, this.audioContext.currentTime);
+                            break;
+                        case 'warning':
+                            oscillator.type = 'sawtooth';
+                            oscillator.frequency.setValueAtTime(400, this.audioContext.currentTime);
+                            break;
+                        case 'bell':
+                            oscillator.type = 'sine';
+                            oscillator.frequency.setValueAtTime(1000, this.audioContext.currentTime);
+                            break;
+                    }
+                    
+                    gainNode.gain.setValueAtTime(this.settings.soundVolume, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.5);
+                    
+                    oscillator.start(this.audioContext.currentTime);
+                    oscillator.stop(this.audioContext.currentTime + 0.5);
+                    
+                } catch (error) {
+                    console.warn('Could not play alert sound:', error);
+                }
+            }
+
+            testAlertSound() {
+                this.playAlertSound();
+                this.addAlert('info', 'Test alert sound played');
+            }
+
+            triggerVisualAlert() {
+                // Flash the alert light
+                this.alertLight.classList.add('alert-pulse');
+            }
+
+            drawDetectionOverlay() {
+                const ctx = this.overlay.getContext('2d');
+                ctx.clearRect(0, 0, this.overlay.width, this.overlay.height);
+                
+                // Draw face bounding box (simulated)
+                const faceWidth = 200;
+                const faceHeight = 250;
+                const faceX = (this.overlay.width - faceWidth) / 2;
+                const faceY = (this.overlay.height - faceHeight) / 2;
+                
+                // Face outline
+                ctx.strokeStyle = this.eyeState === 'closed' ? '#ef4444' : '#10b981';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(faceX, faceY, faceWidth, faceHeight);
+                
+                // Eyes
+                const eyeSize = 30;
+                const leftEyeX = faceX + 50;
+                const rightEyeX = faceX + 150;
+                const eyeY = faceY + 80;
+                
+                // Draw eyes based on state
+                if (this.eyeState === 'closed') {
+                    // Closed eyes (lines)
+                    ctx.strokeStyle = '#ef4444';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(leftEyeX - eyeSize, eyeY);
+                    ctx.lineTo(leftEyeX + eyeSize, eyeY);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(rightEyeX - eyeSize, eyeY);
+                    ctx.lineTo(rightEyeX + eyeSize, eyeY);
+                    ctx.stroke();
+                } else {
+                    // Open eyes (circles)
+                    ctx.fillStyle = '#10b981';
+                    ctx.beginPath();
+                    ctx.arc(leftEyeX, eyeY, eyeSize, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.beginPath();
+                    ctx.arc(rightEyeX, eyeY, eyeSize, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Pupils
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.arc(leftEyeX, eyeY, eyeSize / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.beginPath();
+                    ctx.arc(rightEyeX, eyeY, eyeSize / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Status text
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '16px Arial';
+                ctx.fillText(`Eye State: ${this.eyeState.toUpperCase()}`, 10, 30);
+                ctx.fillText(`Detection: ${this.stats.detectionAccuracy.toFixed(1)}%`, 10, 55);
+                
+                if (this.eyeState === 'closed' && this.stats.eyeClosedStartTime) {
+                    const closedTime = ((Date.now() - this.stats.eyeClosedStartTime) / 1000).toFixed(1);
+                    ctx.fillStyle = '#ef4444';
+                    ctx.fillText(`Closed: ${closedTime}s`, 10, 80);
+                }
+            }
+
+            updateStats() {
+                // Update FPS
+                const now = Date.now();
+                if (now - this.stats.lastFpsUpdate >= 1000) {
+                    const fps = Math.round((this.stats.frameCount * 1000) / (now - this.stats.lastFpsUpdate));
+                    this.frameRate.textContent = fps;
+                    this.stats.frameCount = 0;
+                    this.stats.lastFpsUpdate = now;
+                }
+                
+                // Check for alerts
+                this.checkAlertCondition();
+                
+                // Update closed time display
+                if (this.eyeState === 'closed' && this.stats.eyeClosedStartTime) {
+                    const closedTime = Math.round((Date.now() - this.stats.eyeClosedStartTime) / 1000);
+                    this.eyeClosedTime.textContent = `${closedTime}s`;
+                }
+                
+                this.updateStatsDisplay();
+            }
+
+            updateStatsDisplay() {
+                this.totalAlerts.textContent = this.stats.totalAlerts;
+                this.detectionAccuracy.textContent = `${this.stats.detectionAccuracy.toFixed(1)}%`;
+                
+                if (this.eyeState !== 'closed') {
+                    this.eyeClosedTime.textContent = `${Math.round(this.stats.totalClosedTime)}s`;
+                }
+            }
+
+            updateStatus(status, text) {
+                this.statusText.textContent = text;
+                this.statusIndicator.className = 'status-indicator ' + status;
+            }
+
+            addAlert(type, message) {
+                const alertItem = document.createElement('div');
+                alertItem.className = 'alert-item';
+                alertItem.innerHTML = `
+                    <div class="alert-icon">${this.getAlertIcon(type)}</div>
+                    <div class="alert-content">
+                        <p>${message}</p>
+                        <span class="alert-time">${new Date().toLocaleTimeString()}</span>
+                    </div>
+                    <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
+                `;
+                
+                // Remove empty state if it exists
+                const emptyState = this.alertsList.querySelector('.empty-state');
+                if (emptyState) {
+                    emptyState.remove();
+                }
+                
+                this.alertsList.insertBefore(alertItem, this.alertsList.firstChild);
+                
+                // Limit to 20 alerts
+                if (this.alertsList.children.length > 20) {
+                    this.alertsList.removeChild(this.alertsList.lastChild);
+                }
+            }
+
+            getAlertIcon(type) {
+                const icons = {
+                    'error': '🛑',
+                    'warning': '⚠️',
+                    'info': 'ℹ️',
+                    'success': '✅'
+                };
+                return icons[type] || '📢';
+            }
+
+            clearAlertHistory() {
+                this.alertsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>No alerts yet</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Eye closure alerts will appear here</p>
+                    </div>
+                `;
+            }
+
+            resetStatistics() {
+                this.stats = {
+                    totalAlerts: 0,
+                    eyeClosedStartTime: null,
+                    totalClosedTime: 0,
+                    frameCount: 0,
+                    lastFpsUpdate: Date.now(),
+                    detectionAccuracy: 0
+                };
+                this.updateStatsDisplay();
+                this.addAlert('info', 'Statistics reset');
+            }
+
+            stopDetection() {
+                if (!this.isDetecting) return;
+
+                this.isDetecting = false;
+                clearInterval(this.detectionInterval);
+                
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
+                
+                this.videoPlaceholder.style.display = 'flex';
+                this.video.style.display = 'none';
+                this.overlay.style.display = 'none';
+                
+                this.startBtn.disabled = false;
+                this.stopBtn.disabled = true;
+                
+                this.updateStatus('stopped', 'Detection Stopped');
+                this.addAlert('info', 'Eye detection stopped');
+                this.setEyeState('unknown');
+            }
+        }
+
+        // Initialize the eye detection system when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.eyeDetectionSystem = new EyeDetectionSystem();
+        });
+    </script>
+</body>
+</html>

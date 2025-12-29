@@ -1,1310 +1,1310 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload & Detect - RT-Detect</title>
-  <style>
-    /* CSS Variables */
-    :root {
-      --bg1: linear-gradient(135deg, #0f172a, #0ea5a5);
-      --card: rgba(255, 255, 255, 0.08);
-      --accent: #facc15;
-      --text-primary: #e6eef8;
-      --text-secondary: #94a3b8;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --info: #3b82f6;
-      --border-radius: 12px;
-      --transition: all 0.3s ease;
-    }
-
-    /* Reset and Base Styles */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--bg1);
-      color: var(--text-primary);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
-
-    /* Navigation */
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 40px;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .brand {
-      font-weight: 700;
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand::before {
-      content: "🛡️";
-      font-size: 28px;
-    }
-
-    .menu {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .menu a {
-      color: inherit;
-      text-decoration: none;
-      padding: 10px 15px;
-      border-radius: 8px;
-      transition: var(--transition);
-      font-weight: 500;
-    }
-
-    .menu a.active, .menu a:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--accent);
-    }
-
-    .login-btn {
-      background: rgba(250, 204, 21, 0.15);
-      border: 1px solid rgba(250, 204, 21, 0.3);
-    }
-
-    /* Container */
-    .container {
-      max-width: 1400px;
-      margin: 30px auto;
-      padding: 30px;
-      background: rgba(0, 0, 0, 0.25);
-      border-radius: var(--border-radius);
-      box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
-    }
-
-    /* Header Section */
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .dashboard-header h1 {
-      font-size: 32px;
-      font-weight: 700;
-      background: linear-gradient(to right, #facc15, #3b82f6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* Upload Section */
-    .upload-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin-bottom: 30px;
-    }
-
-    @media (max-width: 1024px) {
-      .upload-section {
-        grid-template-columns: 1fr;
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload & Detect - RT-Detect</title>
+    <style>
+      /* CSS Variables */
+      :root {
+        --bg1: linear-gradient(135deg, #0f172a, #0ea5a5);
+        --card: rgba(255, 255, 255, 0.08);
+        --accent: #facc15;
+        --text-primary: #e6eef8;
+        --text-secondary: #94a3b8;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+        --border-radius: 12px;
+        --transition: all 0.3s ease;
       }
-    }
 
-    .upload-card {
-      background: var(--card);
-      border-radius: var(--border-radius);
-      padding: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .upload-area {
-      border: 2px dashed rgba(255, 255, 255, 0.2);
-      border-radius: var(--border-radius);
-      padding: 40px 20px;
-      text-align: center;
-      transition: var(--transition);
-      cursor: pointer;
-      position: relative;
-    }
-
-    .upload-area:hover {
-      border-color: var(--accent);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .upload-area.drag-over {
-      border-color: var(--accent);
-      background: rgba(250, 204, 21, 0.1);
-    }
-
-    .upload-icon {
-      font-size: 48px;
-      margin-bottom: 15px;
-      opacity: 0.7;
-    }
-
-    .upload-text h3 {
-      font-size: 20px;
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-
-    .upload-text p {
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-    }
-
-    .file-types {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .file-type-tag {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      font-family: inherit;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      text-decoration: none;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #000;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      background: #e6b800;
-      transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-primary);
-    }
-
-    .btn-secondary:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none !important;
-    }
-
-    #uploadInput {
-      display: none;
-    }
-
-    /* Preview Section */
-    .preview-section {
-      position: relative;
-    }
-
-    .preview-container {
-      position: relative;
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      background: #000;
-      min-height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #uploadCanvas, #previewImage {
-      max-width: 100%;
-      max-height: 500px;
-      display: none;
-    }
-
-    .preview-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
-      padding: 40px;
-      text-align: center;
-    }
-
-    .preview-placeholder::before {
-      content: "🖼️";
-      font-size: 48px;
-      margin-bottom: 15px;
-      opacity: 0.5;
-    }
-
-    /* Detection Controls */
-    .detection-controls {
-      background: var(--card);
-      border-radius: var(--border-radius);
-      padding: 25px;
-      margin-bottom: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .controls-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .control-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .control-group label {
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .control-group select, .control-group input {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      padding: 10px 12px;
-      color: var(--text-primary);
-      font-family: inherit;
-    }
-
-    .control-group input[type="range"] {
-      padding: 0;
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    /* Results Section */
-    .results-section {
-      background: var(--card);
-      border-radius: var(--border-radius);
-      padding: 25px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .results-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .results-header h3 {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .detection-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .stat-item {
-      text-align: center;
-      padding: 15px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 8px;
-    }
-
-    .stat-value {
-      font-size: 1.8rem;
-      font-weight: 700;
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .detections-list {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .detection-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 15px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 8px;
-      margin-bottom: 8px;
-      transition: var(--transition);
-    }
-
-    .detection-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .detection-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .detection-class {
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    .detection-confidence {
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .confidence-high {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-    }
-
-    .confidence-medium {
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--warning);
-    }
-
-    .confidence-low {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--danger);
-    }
-
-    /* History Section */
-    .history-section {
-      margin-top: 40px;
-    }
-
-    .section-title {
-      margin-bottom: 20px;
-    }
-
-    .section-title h2 {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .section-title p {
-      color: var(--text-secondary);
-      font-size: 16px;
-    }
-
-    .history-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-    }
-
-    .history-item {
-      background: var(--card);
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: var(--transition);
-      cursor: pointer;
-    }
-
-    .history-item:hover {
-      transform: translateY(-5px);
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .history-thumbnail {
-      width: 100%;
-      height: 120px;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      opacity: 0.7;
-    }
-
-    .history-details {
-      padding: 15px;
-    }
-
-    .history-details h4 {
-      font-size: 14px;
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-
-    .history-meta {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    /* Alert Styles */
-    .alert {
-      padding: 15px 20px;
-      border-radius: 8px;
-      margin: 15px 0;
-      font-weight: 500;
-      border-left: 4px solid;
-    }
-
-    .alert-success {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-      border-left-color: var(--success);
-    }
-
-    .alert-error {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--danger);
-      border-left-color: var(--danger);
-    }
-
-    .alert-warning {
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--warning);
-      border-left-color: var(--warning);
-    }
-
-    .alert-info {
-      background: rgba(59, 130, 246, 0.15);
-      color: var(--info);
-      border-left-color: var(--info);
-    }
-
-    /* Footer */
-    .footer {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 40px 0 20px;
-      margin-top: 60px;
-    }
-
-    .footer-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 30px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 40px;
-    }
-
-    .footer-section h4 {
-      font-size: 18px;
-      margin-bottom: 15px;
-      color: var(--accent);
-    }
-
-    .footer-section p {
-      color: var(--text-secondary);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .footer-section a {
-      display: block;
-      color: var(--text-secondary);
-      text-decoration: none;
-      margin-bottom: 10px;
-      transition: var(--transition);
-      font-size: 14px;
-    }
-
-    .footer-section a:hover {
-      color: var(--accent);
-      padding-left: 5px;
-    }
-
-    .footer-bottom {
-      text-align: center;
-      padding-top: 30px;
-      margin-top: 30px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
+      /* Reset and Base Styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg1);
+        color: var(--text-primary);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+
+      /* Navigation */
       .nav {
-        padding: 15px 20px;
-        flex-direction: column;
-        gap: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 40px;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        position: sticky;
+        top: 0;
+        z-index: 100;
       }
 
-      .menu {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .container {
-        padding: 20px;
-        margin: 20px;
-      }
-
-      .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
+      .brand {
+        font-weight: 700;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
         gap: 10px;
       }
 
-      .controls-grid {
-        grid-template-columns: 1fr;
+      .brand::before {
+        content: "🛡️";
+        font-size: 28px;
       }
 
-      .action-buttons {
-        flex-direction: column;
+      .menu {
+        display: flex;
+        align-items: center;
+        gap: 5px;
       }
 
-      .history-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      .menu a {
+        color: inherit;
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        transition: var(--transition);
+        font-weight: 500;
       }
-    }
 
-    @media (max-width: 576px) {
+      .menu a.active, .menu a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--accent);
+      }
+
+      .login-btn {
+        background: rgba(250, 204, 21, 0.15);
+        border: 1px solid rgba(250, 204, 21, 0.3);
+      }
+
+      /* Container */
       .container {
-        padding: 15px;
-        margin: 15px;
+        max-width: 1400px;
+        margin: 30px auto;
+        padding: 30px;
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: var(--border-radius);
+        box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
+      }
+
+      /* Header Section */
+      .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .dashboard-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        background: linear-gradient(to right, #facc15, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Upload Section */
+      .upload-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      @media (max-width: 1024px) {
+        .upload-section {
+          grid-template-columns: 1fr;
+        }
       }
 
       .upload-card {
-        padding: 20px;
+        background: var(--card);
+        border-radius: var(--border-radius);
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .upload-area {
+        border: 2px dashed rgba(255, 255, 255, 0.2);
+        border-radius: var(--border-radius);
+        padding: 40px 20px;
+        text-align: center;
+        transition: var(--transition);
+        cursor: pointer;
+        position: relative;
+      }
+
+      .upload-area:hover {
+        border-color: var(--accent);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .upload-area.drag-over {
+        border-color: var(--accent);
+        background: rgba(250, 204, 21, 0.1);
+      }
+
+      .upload-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.7;
+      }
+
+      .upload-text h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+
+      .upload-text p {
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+      }
+
+      .file-types {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+
+      .file-type-tag {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-family: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: #000;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: #e6b800;
+        transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+      }
+
+      .btn-secondary:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      #uploadInput {
+        display: none;
+      }
+
+      /* Preview Section */
+      .preview-section {
+        position: relative;
+      }
+
+      .preview-container {
+        position: relative;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        background: #000;
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #uploadCanvas, #previewImage {
+        max-width: 100%;
+        max-height: 500px;
+        display: none;
+      }
+
+      .preview-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        padding: 40px;
+        text-align: center;
+      }
+
+      .preview-placeholder::before {
+        content: "🖼️";
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.5;
+      }
+
+      /* Detection Controls */
+      .detection-controls {
+        background: var(--card);
+        border-radius: var(--border-radius);
+        padding: 25px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .controls-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .control-group label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .control-group select, .control-group input {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 10px 12px;
+        color: var(--text-primary);
+        font-family: inherit;
+      }
+
+      .control-group input[type="range"] {
+        padding: 0;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      /* Results Section */
+      .results-section {
+        background: var(--card);
+        border-radius: var(--border-radius);
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .results-header h3 {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .detection-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .stat-item {
+        text-align: center;
+        padding: 15px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .detections-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .detection-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        margin-bottom: 8px;
+        transition: var(--transition);
+      }
+
+      .detection-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .detection-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .detection-class {
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+
+      .detection-confidence {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .confidence-high {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--success);
+      }
+
+      .confidence-medium {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+      }
+
+      .confidence-low {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+      }
+
+      /* History Section */
+      .history-section {
+        margin-top: 40px;
+      }
+
+      .section-title {
+        margin-bottom: 20px;
+      }
+
+      .section-title h2 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .section-title p {
+        color: var(--text-secondary);
+        font-size: 16px;
+      }
+
+      .history-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+      }
+
+      .history-item {
+        background: var(--card);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: var(--transition);
+        cursor: pointer;
+      }
+
+      .history-item:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .history-thumbnail {
+        width: 100%;
+        height: 120px;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        opacity: 0.7;
+      }
+
+      .history-details {
+        padding: 15px;
+      }
+
+      .history-details h4 {
+        font-size: 14px;
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+
+      .history-meta {
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+
+      /* Alert Styles */
+      .alert {
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin: 15px 0;
+        font-weight: 500;
+        border-left: 4px solid;
+      }
+
+      .alert-success {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--success);
+        border-left-color: var(--success);
+      }
+
+      .alert-error {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+        border-left-color: var(--danger);
+      }
+
+      .alert-warning {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+        border-left-color: var(--warning);
+      }
+
+      .alert-info {
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--info);
+        border-left-color: var(--info);
+      }
+
+      /* Footer */
+      .footer {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 40px 0 20px;
+        margin-top: 60px;
       }
 
       .footer-content {
-        grid-template-columns: 1fr;
-        gap: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 30px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
       }
-    }
 
-    /* Loading Animation */
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: var(--accent);
-      animation: spin 1s ease-in-out infinite;
-    }
+      .footer-section h4 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: var(--accent);
+      }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-<body>
-  <!-- Navigation -->
-  <div class="nav">
-    <div class="brand">RT-Detect</div>
-    <div class="menu">
-      <a href="index.html">Dashboard</a>
-      <a href="live.html">Live</a>
-      <a href="upload.html" class="active">Upload</a>
-      <a href="alerts.html">Alerts</a>
-      <a href="logs.html">Logs</a>
-      <a href="settings.html">Settings</a>
-      <a href="login.html" class="login-btn">Login</a>
-    </div>
-  </div>
+      .footer-section p {
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.6;
+      }
 
-  <!-- Main Content -->
-  <div class="container">
-    <!-- Header Section -->
-    <div class="dashboard-header">
-      <h1>Upload & Detect</h1>
-      <div class="file-types">
-        <span class="file-type-tag">JPG</span>
-        <span class="file-type-tag">PNG</span>
-        <span class="file-type-tag">GIF</span>
-        <span class="file-type-tag">MP4</span>
-        <span class="file-type-tag">AVI</span>
+      .footer-section a {
+        display: block;
+        color: var(--text-secondary);
+        text-decoration: none;
+        margin-bottom: 10px;
+        transition: var(--transition);
+        font-size: 14px;
+      }
+
+      .footer-section a:hover {
+        color: var(--accent);
+        padding-left: 5px;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        padding-top: 30px;
+        margin-top: 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .nav {
+          padding: 15px 20px;
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .menu {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .container {
+          padding: 20px;
+          margin: 20px;
+        }
+
+        .dashboard-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        .controls-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+
+        .history-grid {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+      }
+
+      @media (max-width: 576px) {
+        .container {
+          padding: 15px;
+          margin: 15px;
+        }
+
+        .upload-card {
+          padding: 20px;
+        }
+
+        .footer-content {
+          grid-template-columns: 1fr;
+          gap: 30px;
+        }
+      }
+
+      /* Loading Animation */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--accent);
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <div class="nav">
+      <div class="brand">RT-Detect</div>
+      <div class="menu">
+        <a href="index.html">Dashboard</a>
+        <a href="live.html">Live</a>
+        <a href="upload.html" class="active">Upload</a>
+        <!-- <a href="alerts.html">Alerts</a> -->
+        <a href="logs.html">Logs</a>
+        <!-- <a href="settings.html">Settings</a> -->
+        <a href="login.html" class="login-btn">Login</a>
       </div>
     </div>
 
-    <!-- Upload Section -->
-    <div class="upload-section">
-      <div class="upload-card">
-        <div class="upload-area" id="uploadArea">
-          <div class="upload-icon">📁</div>
-          <div class="upload-text">
-            <h3>Upload Media Files</h3>
-            <p>Drag & drop images or videos here, or click to browse</p>
-            <div class="file-types">
-              <span class="file-type-tag">Max: 50MB</span>
-              <span class="file-type-tag">Images & Videos</span>
+    <!-- Main Content -->
+    <div class="container">
+      <!-- Header Section -->
+      <div class="dashboard-header">
+        <h1>Upload & Detect</h1>
+        <div class="file-types">
+          <span class="file-type-tag">JPG</span>
+          <span class="file-type-tag">PNG</span>
+          <span class="file-type-tag">GIF</span>
+          <span class="file-type-tag">MP4</span>
+          <span class="file-type-tag">AVI</span>
+        </div>
+      </div>
+
+      <!-- Upload Section -->
+      <div class="upload-section">
+        <div class="upload-card">
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">
+              <h3>Upload Media Files</h3>
+              <p>Drag & drop images or videos here, or click to browse</p>
+              <div class="file-types">
+                <span class="file-type-tag">Max: 50MB</span>
+                <span class="file-type-tag">Images & Videos</span>
+              </div>
+              <button class="btn btn-primary" onclick="document.getElementById('uploadInput').click()">
+                Choose Files
+              </button>
             </div>
-            <button class="btn btn-primary" onclick="document.getElementById('uploadInput').click()">
-              Choose Files
-            </button>
+            <input type="file" id="uploadInput" accept="image/*,video/*" multiple>
           </div>
-          <input type="file" id="uploadInput" accept="image/*,video/*" multiple>
-        </div>
 
-        <div id="fileInfo" style="display: none; margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 8px;">
-          <h4>Selected Files</h4>
-          <div id="fileList"></div>
-        </div>
-      </div>
-
-      <div class="upload-card preview-section">
-        <div class="preview-container">
-          <img id="previewImage" alt="Preview">
-          <canvas id="uploadCanvas"></canvas>
-          <div class="preview-placeholder" id="previewPlaceholder">
-            <p>Preview will appear here</p>
-            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Upload an image to see detection results</p>
+          <div id="fileInfo" style="display: none; margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+            <h4>Selected Files</h4>
+            <div id="fileList"></div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Detection Controls -->
-    <div class="detection-controls">
-      <div class="controls-grid">
-        <div class="control-group">
-          <label for="modelSelect">Detection Model</label>
-          <select id="modelSelect">
-            <option value="yolov8n">YOLOv8 Nano (Fastest)</option>
-            <option value="yolov8s">YOLOv8 Small</option>
-            <option value="yolov8m" selected>YOLOv8 Medium</option>
-            <option value="yolov8l">YOLOv8 Large</option>
-          </select>
-        </div>
-        
-        <div class="control-group">
-          <label for="confidenceSlider">Confidence Threshold: <span id="confidenceValue">0.5</span></label>
-          <input type="range" id="confidenceSlider" min="0.1" max="0.9" step="0.1" value="0.5">
-        </div>
-        
-        <div class="control-group">
-          <label for="imageSize">Image Size</label>
-          <select id="imageSize">
-            <option value="320">320px (Fastest)</option>
-            <option value="640" selected>640px (Balanced)</option>
-            <option value="1280">1280px (Most Accurate)</option>
-          </select>
-        </div>
-      </div>
-      
-      <div class="action-buttons">
-        <button class="btn btn-primary" id="detectBtn" disabled>
-          <span>Start Detection</span>
-        </button>
-        <button class="btn btn-secondary" id="clearBtn" disabled>
-          Clear Results
-        </button>
-        <button class="btn btn-secondary" id="downloadBtn" disabled>
-          Download Result
-        </button>
-      </div>
-    </div>
-
-    <!-- Results Section -->
-    <div class="results-section" id="resultsSection" style="display: none;">
-      <div class="results-header">
-        <h3>Detection Results</h3>
-        <div class="detection-stats">
-          <div class="stat-item">
-            <span class="stat-value" id="totalObjects">0</span>
-            <span class="stat-label">Objects Found</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="detectionTime">0ms</span>
-            <span class="stat-label">Processing Time</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="avgConfidence">0%</span>
-            <span class="stat-label">Avg Confidence</span>
-          </div>
-        </div>
-      </div>
-
-      <div id="detectionsList" class="detections-list">
-        <!-- Detection items will be populated here -->
-      </div>
-    </div>
-
-    <!-- Upload History -->
-    <div class="history-section">
-      <div class="section-title">
-        <h2>Recent Uploads</h2>
-        <p>Previously analyzed images and their detection results</p>
-      </div>
-      
-      <div class="history-grid" id="uploadHistory">
-        <!-- History items will be populated here -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h4>RT-Detect</h4>
-        <p>Advanced real-time detection and analytics platform</p>
-      </div>
-      <div class="footer-section">
-        <h4>Quick Links</h4>
-        <a href="live.html">Live Detection</a>
-        <a href="upload.html">Upload Files</a>
-        <a href="alerts.html">Alerts</a>
-      </div>
-      <div class="footer-section">
-        <h4>Support</h4>
-        <a href="about.html">Documentation</a>
-        <a href="about.html">Contact Us</a>
-        <a href="about.html">FAQ</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2023 RT-Detect. All rights reserved.</p>
-    </div>
-  </footer>
-
-  <script>
-    // Backend configuration
-    const BACKEND_URL = (() => {
-      const currentOrigin = window.location.origin;
-      if (currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')) {
-        return 'http://localhost:5000';
-      }
-      return currentOrigin.replace(/:\d+$/, ':5000');
-    })();
-
-    // DOM Elements
-    const uploadInput = document.getElementById('uploadInput');
-    const uploadArea = document.getElementById('uploadArea');
-    const previewImage = document.getElementById('previewImage');
-    const uploadCanvas = document.getElementById('uploadCanvas');
-    const previewPlaceholder = document.getElementById('previewPlaceholder');
-    const detectBtn = document.getElementById('detectBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const confidenceSlider = document.getElementById('confidenceSlider');
-    const confidenceValue = document.getElementById('confidenceValue');
-    const resultsSection = document.getElementById('resultsSection');
-    const detectionsList = document.getElementById('detectionsList');
-    const totalObjects = document.getElementById('totalObjects');
-    const detectionTime = document.getElementById('detectionTime');
-    const avgConfidence = document.getElementById('avgConfidence');
-    const uploadHistory = document.getElementById('uploadHistory');
-    const fileInfo = document.getElementById('fileInfo');
-    const fileList = document.getElementById('fileList');
-
-    // State variables
-    let currentFile = null;
-    let detectionResults = null;
-    let uploadHistoryData = [];
-
-    // Initialize the application
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeApp();
-      setupEventListeners();
-      loadUploadHistory();
-    });
-
-    function initializeApp() {
-      updateConfidenceValue();
-      checkBackendStatus();
-    }
-
-    function setupEventListeners() {
-      // File input change
-      uploadInput.addEventListener('change', handleFileSelect);
-      
-      // Drag and drop
-      uploadArea.addEventListener('dragover', handleDragOver);
-      uploadArea.addEventListener('dragleave', handleDragLeave);
-      uploadArea.addEventListener('drop', handleFileDrop);
-      
-      // Click on upload area
-      uploadArea.addEventListener('click', () => uploadInput.click());
-      
-      // Confidence slider
-      confidenceSlider.addEventListener('input', updateConfidenceValue);
-      
-      // Action buttons
-      detectBtn.addEventListener('click', startDetection);
-      clearBtn.addEventListener('click', clearResults);
-      downloadBtn.addEventListener('click', downloadResult);
-    }
-
-    function updateConfidenceValue() {
-      confidenceValue.textContent = confidenceSlider.value;
-    }
-
-    function handleDragOver(e) {
-      e.preventDefault();
-      uploadArea.classList.add('drag-over');
-    }
-
-    function handleDragLeave(e) {
-      e.preventDefault();
-      uploadArea.classList.remove('drag-over');
-    }
-
-    function handleFileDrop(e) {
-      e.preventDefault();
-      uploadArea.classList.remove('drag-over');
-      
-      const files = e.dataTransfer.files;
-      if (files.length > 0) {
-        handleFiles(files);
-      }
-    }
-
-    function handleFileSelect(e) {
-      const files = e.target.files;
-      if (files.length > 0) {
-        handleFiles(files);
-      }
-    }
-
-    function handleFiles(files) {
-      // For now, only handle the first file
-      const file = files[0];
-      
-      if (!file.type.match('image.*') && !file.type.match('video.*')) {
-        showAlert('Please select an image or video file.', 'error');
-        return;
-      }
-      
-      if (file.size > 50 * 1024 * 1024) { // 50MB limit
-        showAlert('File size must be less than 50MB.', 'error');
-        return;
-      }
-      
-      currentFile = file;
-      displayFileInfo(file);
-      previewFile(file);
-      detectBtn.disabled = false;
-    }
-
-    function displayFileInfo(file) {
-      fileInfo.style.display = 'block';
-      fileList.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px;">
-          <div>
-            <strong>${file.name}</strong>
-            <div style="font-size: 12px; color: var(--text-secondary);">
-              ${(file.size / 1024 / 1024).toFixed(2)} MB • ${file.type}
+        <div class="upload-card preview-section">
+          <div class="preview-container">
+            <img id="previewImage" alt="Preview">
+            <canvas id="uploadCanvas"></canvas>
+            <div class="preview-placeholder" id="previewPlaceholder">
+              <p>Preview will appear here</p>
+              <p style="font-size: 0.9rem; margin-top: 0.5rem;">Upload an image to see detection results</p>
             </div>
           </div>
-          <button class="btn btn-secondary" onclick="clearFileSelection()" style="padding: 5px 10px; font-size: 12px;">
-            Remove
+        </div>
+      </div>
+
+      <!-- Detection Controls -->
+      <div class="detection-controls">
+        <div class="controls-grid">
+          <div class="control-group">
+            <label for="modelSelect">Detection Model</label>
+            <select id="modelSelect">
+              <option value="yolov8n">YOLOv8 Nano (Fastest)</option>
+              <option value="yolov8s">YOLOv8 Small</option>
+              <option value="yolov8m" selected>YOLOv8 Medium</option>
+              <option value="yolov8l">YOLOv8 Large</option>
+            </select>
+          </div>
+          
+          <div class="control-group">
+            <label for="confidenceSlider">Confidence Threshold: <span id="confidenceValue">0.5</span></label>
+            <input type="range" id="confidenceSlider" min="0.1" max="0.9" step="0.1" value="0.5">
+          </div>
+          
+          <div class="control-group">
+            <label for="imageSize">Image Size</label>
+            <select id="imageSize">
+              <option value="320">320px (Fastest)</option>
+              <option value="640" selected>640px (Balanced)</option>
+              <option value="1280">1280px (Most Accurate)</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="detectBtn" disabled>
+            <span>Start Detection</span>
+          </button>
+          <button class="btn btn-secondary" id="clearBtn" disabled>
+            Clear Results
+          </button>
+          <button class="btn btn-secondary" id="downloadBtn" disabled>
+            Download Result
           </button>
         </div>
-      `;
-    }
+      </div>
 
-    function clearFileSelection() {
-      currentFile = null;
-      uploadInput.value = '';
-      fileInfo.style.display = 'none';
-      previewPlaceholder.style.display = 'flex';
-      previewImage.style.display = 'none';
-      uploadCanvas.style.display = 'none';
-      detectBtn.disabled = true;
-      clearBtn.disabled = true;
-      resultsSection.style.display = 'none';
-    }
+      <!-- Results Section -->
+      <div class="results-section" id="resultsSection" style="display: none;">
+        <div class="results-header">
+          <h3>Detection Results</h3>
+          <div class="detection-stats">
+            <div class="stat-item">
+              <span class="stat-value" id="totalObjects">0</span>
+              <span class="stat-label">Objects Found</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="detectionTime">0ms</span>
+              <span class="stat-label">Processing Time</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="avgConfidence">0%</span>
+              <span class="stat-label">Avg Confidence</span>
+            </div>
+          </div>
+        </div>
 
-    function previewFile(file) {
-      if (file.type.match('image.*')) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          previewImage.src = e.target.result;
-          previewImage.style.display = 'block';
-          previewPlaceholder.style.display = 'none';
-          uploadCanvas.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-      } else if (file.type.match('video.*')) {
-        // For videos, we'll just show a placeholder
-        previewPlaceholder.innerHTML = `
-          <p>Video file selected</p>
-          <p style="font-size: 0.9rem; margin-top: 0.5rem;">Video detection will be available soon</p>
+        <div id="detectionsList" class="detections-list">
+          <!-- Detection items will be populated here -->
+        </div>
+      </div>
+
+      <!-- Upload History -->
+      <div class="history-section">
+        <div class="section-title">
+          <h2>Recent Uploads</h2>
+          <p>Previously analyzed images and their detection results</p>
+        </div>
+        
+        <div class="history-grid" id="uploadHistory">
+          <!-- History items will be populated here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>RT-Detect</h4>
+          <p>Advanced real-time detection and analytics platform</p>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <a href="live.html">Live Detection</a>
+          <a href="upload.html">Upload Files</a>
+          <!-- <a href="alerts.html">Alerts</a> -->
+        </div>
+        <div class="footer-section">
+          <h4>Support</h4>
+          <a href="about.html">Documentation</a>
+          <a href="about.html">Contact Us</a>
+          <a href="about.html">FAQ</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2023 RT-Detect. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Backend configuration
+      const BACKEND_URL = (() => {
+        const currentOrigin = window.location.origin;
+        if (currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')) {
+          return 'http://localhost:5000';
+        }
+        return currentOrigin.replace(/:\d+$/, ':5000');
+      })();
+
+      // DOM Elements
+      const uploadInput = document.getElementById('uploadInput');
+      const uploadArea = document.getElementById('uploadArea');
+      const previewImage = document.getElementById('previewImage');
+      const uploadCanvas = document.getElementById('uploadCanvas');
+      const previewPlaceholder = document.getElementById('previewPlaceholder');
+      const detectBtn = document.getElementById('detectBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const confidenceSlider = document.getElementById('confidenceSlider');
+      const confidenceValue = document.getElementById('confidenceValue');
+      const resultsSection = document.getElementById('resultsSection');
+      const detectionsList = document.getElementById('detectionsList');
+      const totalObjects = document.getElementById('totalObjects');
+      const detectionTime = document.getElementById('detectionTime');
+      const avgConfidence = document.getElementById('avgConfidence');
+      const uploadHistory = document.getElementById('uploadHistory');
+      const fileInfo = document.getElementById('fileInfo');
+      const fileList = document.getElementById('fileList');
+
+      // State variables
+      let currentFile = null;
+      let detectionResults = null;
+      let uploadHistoryData = [];
+
+      // Initialize the application
+      document.addEventListener('DOMContentLoaded', function() {
+        initializeApp();
+        setupEventListeners();
+        loadUploadHistory();
+      });
+
+      function initializeApp() {
+        updateConfidenceValue();
+        checkBackendStatus();
+      }
+
+      function setupEventListeners() {
+        // File input change
+        uploadInput.addEventListener('change', handleFileSelect);
+        
+        // Drag and drop
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        uploadArea.addEventListener('drop', handleFileDrop);
+        
+        // Click on upload area
+        uploadArea.addEventListener('click', () => uploadInput.click());
+        
+        // Confidence slider
+        confidenceSlider.addEventListener('input', updateConfidenceValue);
+        
+        // Action buttons
+        detectBtn.addEventListener('click', startDetection);
+        clearBtn.addEventListener('click', clearResults);
+        downloadBtn.addEventListener('click', downloadResult);
+      }
+
+      function updateConfidenceValue() {
+        confidenceValue.textContent = confidenceSlider.value;
+      }
+
+      function handleDragOver(e) {
+        e.preventDefault();
+        uploadArea.classList.add('drag-over');
+      }
+
+      function handleDragLeave(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('drag-over');
+      }
+
+      function handleFileDrop(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('drag-over');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleFiles(files);
+        }
+      }
+
+      function handleFileSelect(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+          handleFiles(files);
+        }
+      }
+
+      function handleFiles(files) {
+        // For now, only handle the first file
+        const file = files[0];
+        
+        if (!file.type.match('image.*') && !file.type.match('video.*')) {
+          showAlert('Please select an image or video file.', 'error');
+          return;
+        }
+        
+        if (file.size > 50 * 1024 * 1024) { // 50MB limit
+          showAlert('File size must be less than 50MB.', 'error');
+          return;
+        }
+        
+        currentFile = file;
+        displayFileInfo(file);
+        previewFile(file);
+        detectBtn.disabled = false;
+      }
+
+      function displayFileInfo(file) {
+        fileInfo.style.display = 'block';
+        fileList.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+            <div>
+              <strong>${file.name}</strong>
+              <div style="font-size: 12px; color: var(--text-secondary);">
+                ${(file.size / 1024 / 1024).toFixed(2)} MB • ${file.type}
+              </div>
+            </div>
+            <button class="btn btn-secondary" onclick="clearFileSelection()" style="padding: 5px 10px; font-size: 12px;">
+              Remove
+            </button>
+          </div>
         `;
+      }
+
+      function clearFileSelection() {
+        currentFile = null;
+        uploadInput.value = '';
+        fileInfo.style.display = 'none';
         previewPlaceholder.style.display = 'flex';
         previewImage.style.display = 'none';
         uploadCanvas.style.display = 'none';
+        detectBtn.disabled = true;
+        clearBtn.disabled = true;
+        resultsSection.style.display = 'none';
       }
-    }
 
-    async function startDetection() {
-      if (!currentFile) return;
-      
-      detectBtn.innerHTML = '<div class="loading"></div> Processing...';
-      detectBtn.disabled = true;
-      
-      try {
-        // Convert image to base64
-        const imageData = await fileToBase64(currentFile);
+      function previewFile(file) {
+        if (file.type.match('image.*')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            previewImage.style.display = 'block';
+            previewPlaceholder.style.display = 'none';
+            uploadCanvas.style.display = 'none';
+          };
+          reader.readAsDataURL(file);
+        } else if (file.type.match('video.*')) {
+          // For videos, we'll just show a placeholder
+          previewPlaceholder.innerHTML = `
+            <p>Video file selected</p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Video detection will be available soon</p>
+          `;
+          previewPlaceholder.style.display = 'flex';
+          previewImage.style.display = 'none';
+          uploadCanvas.style.display = 'none';
+        }
+      }
+
+      async function startDetection() {
+        if (!currentFile) return;
         
-        // Prepare request data
-        const requestData = {
-          image: imageData,
-          confidence: parseFloat(confidenceSlider.value),
-          imgsz: parseInt(document.getElementById('imageSize').value)
-        };
+        detectBtn.innerHTML = '<div class="loading"></div> Processing...';
+        detectBtn.disabled = true;
         
-        // Send to backend
-        const startTime = performance.now();
-        const response = await fetch(`${BACKEND_URL}/detect`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestData)
-        });
+        try {
+          // Convert image to base64
+          const imageData = await fileToBase64(currentFile);
+          
+          // Prepare request data
+          const requestData = {
+            image: imageData,
+            confidence: parseFloat(confidenceSlider.value),
+            imgsz: parseInt(document.getElementById('imageSize').value)
+          };
+          
+          // Send to backend
+          const startTime = performance.now();
+          const response = await fetch(`${BACKEND_URL}/detect`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Backend error: ${response.status}`);
+          }
+          
+          const result = await response.json();
+          const endTime = performance.now();
+          
+          // Process results
+          processDetectionResults(result, endTime - startTime);
+          saveToHistory(currentFile, result, endTime - startTime);
+          
+          showAlert('Detection completed successfully!', 'success');
+          
+        } catch (error) {
+          console.error('Detection error:', error);
+          showAlert(`Detection failed: ${error.message}`, 'error');
+          
+          // Fallback to mock data for demonstration
+          if (error.message.includes('Failed to fetch')) {
+            simulateDetection();
+          }
+        } finally {
+          detectBtn.innerHTML = '<span>Start Detection</span>';
+          detectBtn.disabled = false;
+        }
+      }
+
+      function processDetectionResults(result, processingTime) {
+        detectionResults = result;
         
-        if (!response.ok) {
-          throw new Error(`Backend error: ${response.status}`);
+        // Show results section
+        resultsSection.style.display = 'block';
+        clearBtn.disabled = false;
+        downloadBtn.disabled = false;
+        
+        // Update statistics
+        const detections = result.detections || [];
+        totalObjects.textContent = detections.length;
+        detectionTime.textContent = `${Math.round(processingTime)}ms`;
+        
+        // Calculate average confidence
+        const avgConf = detections.length > 0 
+          ? detections.reduce((sum, det) => sum + det.confidence, 0) / detections.length 
+          : 0;
+        avgConfidence.textContent = `${(avgConf * 100).toFixed(1)}%`;
+        
+        // Display detections list
+        displayDetectionsList(detections);
+        
+        // Draw bounding boxes on canvas
+        drawBoundingBoxes(detections);
+      }
+
+      function displayDetectionsList(detections) {
+        if (detections.length === 0) {
+          detectionsList.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+              <p>No objects detected</p>
+              <p style="font-size: 0.9rem; margin-top: 0.5rem;">Try adjusting the confidence threshold</p>
+            </div>
+          `;
+          return;
         }
         
-        const result = await response.json();
-        const endTime = performance.now();
-        
-        // Process results
-        processDetectionResults(result, endTime - startTime);
-        saveToHistory(currentFile, result, endTime - startTime);
-        
-        showAlert('Detection completed successfully!', 'success');
-        
-      } catch (error) {
-        console.error('Detection error:', error);
-        showAlert(`Detection failed: ${error.message}`, 'error');
-        
-        // Fallback to mock data for demonstration
-        if (error.message.includes('Failed to fetch')) {
-          simulateDetection();
-        }
-      } finally {
-        detectBtn.innerHTML = '<span>Start Detection</span>';
-        detectBtn.disabled = false;
-      }
-    }
-
-    function processDetectionResults(result, processingTime) {
-      detectionResults = result;
-      
-      // Show results section
-      resultsSection.style.display = 'block';
-      clearBtn.disabled = false;
-      downloadBtn.disabled = false;
-      
-      // Update statistics
-      const detections = result.detections || [];
-      totalObjects.textContent = detections.length;
-      detectionTime.textContent = `${Math.round(processingTime)}ms`;
-      
-      // Calculate average confidence
-      const avgConf = detections.length > 0 
-        ? detections.reduce((sum, det) => sum + det.confidence, 0) / detections.length 
-        : 0;
-      avgConfidence.textContent = `${(avgConf * 100).toFixed(1)}%`;
-      
-      // Display detections list
-      displayDetectionsList(detections);
-      
-      // Draw bounding boxes on canvas
-      drawBoundingBoxes(detections);
-    }
-
-    function displayDetectionsList(detections) {
-      if (detections.length === 0) {
-        detectionsList.innerHTML = `
-          <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-            <p>No objects detected</p>
-            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Try adjusting the confidence threshold</p>
-          </div>
-        `;
-        return;
-      }
-      
-      detectionsList.innerHTML = detections.map(det => {
-        const confidencePercent = (det.confidence * 100).toFixed(1);
-        const confidenceClass = det.confidence >= 0.8 ? 'confidence-high' : 
-                              det.confidence >= 0.5 ? 'confidence-medium' : 'confidence-low';
-        
-        return `
-          <div class="detection-item">
-            <div class="detection-info">
-              <span class="detection-class">${det.name}</span>
-            </div>
-            <div class="detection-confidence ${confidenceClass}">
-              ${confidencePercent}%
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function drawBoundingBoxes(detections) {
-      if (!previewImage.complete || detections.length === 0) return;
-      
-      const ctx = uploadCanvas.getContext('2d');
-      
-      // Set canvas dimensions to match image
-      uploadCanvas.width = previewImage.width;
-      uploadCanvas.height = previewImage.height;
-      
-      // Clear canvas
-      ctx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
-      
-      // Draw bounding boxes and labels
-      detections.forEach(det => {
-        const [x_center, y_center, width, height] = det.box;
-        const x = x_center - width / 2;
-        const y = y_center - height / 2;
-        
-        // Draw bounding box
-        ctx.strokeStyle = '#facc15';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, width, height);
-        
-        // Draw label background
-        const label = `${det.name} ${(det.confidence * 100).toFixed(1)}%`;
-        ctx.font = '14px Arial';
-        const textWidth = ctx.measureText(label).width;
-        
-        ctx.fillStyle = '#facc15';
-        ctx.fillRect(x, y - 20, textWidth + 10, 20);
-        
-        // Draw label text
-        ctx.fillStyle = 'black';
-        ctx.fillText(label, x + 5, y - 5);
-      });
-      
-      // Show canvas over image
-      uploadCanvas.style.display = 'block';
-    }
-
-    function clearResults() {
-      detectionResults = null;
-      resultsSection.style.display = 'none';
-      clearBtn.disabled = true;
-      downloadBtn.disabled = true;
-      uploadCanvas.style.display = 'none';
-      previewImage.style.display = 'block';
-    }
-
-    function downloadResult() {
-      if (!detectionResults) return;
-      
-      // Create a temporary link to download the canvas image
-      const link = document.createElement('a');
-      link.download = `detection-${new Date().getTime()}.png`;
-      link.href = uploadCanvas.toDataURL();
-      link.click();
-    }
-
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
-    }
-
-    function saveToHistory(file, results, processingTime) {
-      const historyItem = {
-        id: Date.now(),
-        filename: file.name,
-        timestamp: new Date().toISOString(),
-        results: results,
-        processingTime: processingTime,
-        thumbnail: previewImage.src
-      };
-      
-      uploadHistoryData.unshift(historyItem);
-      
-      // Keep only last 20 items
-      if (uploadHistoryData.length > 20) {
-        uploadHistoryData = uploadHistoryData.slice(0, 20);
-      }
-      
-      // Save to localStorage
-      localStorage.setItem('rt-detect-upload-history', JSON.stringify(uploadHistoryData));
-      
-      // Update history display
-      loadUploadHistory();
-    }
-
-    function loadUploadHistory() {
-      try {
-        const stored = localStorage.getItem('rt-detect-upload-history');
-        if (stored) {
-          uploadHistoryData = JSON.parse(stored);
-        }
-      } catch (error) {
-        console.error('Error loading upload history:', error);
-        uploadHistoryData = [];
-      }
-      
-      displayUploadHistory();
-    }
-
-    function displayUploadHistory() {
-      if (uploadHistoryData.length === 0) {
-        uploadHistory.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-secondary);">
-            <p>No upload history yet</p>
-            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Upload and analyze images to see them here</p>
-          </div>
-        `;
-        return;
-      }
-      
-      uploadHistory.innerHTML = uploadHistoryData.map(item => {
-        const detections = item.results.detections || [];
-        const date = new Date(item.timestamp).toLocaleDateString();
-        
-        return `
-          <div class="history-item" onclick="loadHistoryItem('${item.id}')">
-            <div class="history-thumbnail" style="background-image: url('${item.thumbnail}'); background-size: cover; background-position: center;">
-              ${!item.thumbnail ? '🖼️' : ''}
-            </div>
-            <div class="history-details">
-              <h4>${item.filename}</h4>
-              <div class="history-meta">
-                <div>${detections.length} objects</div>
-                <div>${date}</div>
+        detectionsList.innerHTML = detections.map(det => {
+          const confidencePercent = (det.confidence * 100).toFixed(1);
+          const confidenceClass = det.confidence >= 0.8 ? 'confidence-high' : 
+                                det.confidence >= 0.5 ? 'confidence-medium' : 'confidence-low';
+          
+          return `
+            <div class="detection-item">
+              <div class="detection-info">
+                <span class="detection-class">${det.name}</span>
+              </div>
+              <div class="detection-confidence ${confidenceClass}">
+                ${confidencePercent}%
               </div>
             </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function loadHistoryItem(id) {
-      const item = uploadHistoryData.find(i => i.id.toString() === id);
-      if (item) {
-        // Load the image and results
-        previewImage.src = item.thumbnail;
-        previewImage.style.display = 'block';
-        previewPlaceholder.style.display = 'none';
-        currentFile = { name: item.filename };
-        
-        // Process the stored results
-        processDetectionResults(item.results, item.processingTime);
-        
-        showAlert('Loaded from history', 'info');
+          `;
+        }).join('');
       }
-    }
 
-    function showAlert(message, type) {
-      // Remove existing alerts
-      const existingAlerts = document.querySelectorAll('.alert');
-      existingAlerts.forEach(alert => alert.remove());
-      
-      // Create new alert
-      const alert = document.createElement('div');
-      alert.className = `alert alert-${type}`;
-      alert.textContent = message;
-      
-      // Insert after the header
-      const header = document.querySelector('.dashboard-header');
-      header.parentNode.insertBefore(alert, header.nextSibling);
-      
-      // Auto-remove after 5 seconds
-      setTimeout(() => {
-        if (alert.parentNode) {
-          alert.parentNode.removeChild(alert);
-        }
-      }, 5000);
-    }
-
-    function checkBackendStatus() {
-      fetch(`${BACKEND_URL}/health`)
-        .then(response => {
-          if (!response.ok) throw new Error('Backend not responding');
-          showAlert('Backend connected successfully', 'success');
-        })
-        .catch(error => {
-          showAlert('Backend not available - using demo mode', 'warning');
+      function drawBoundingBoxes(detections) {
+        if (!previewImage.complete || detections.length === 0) return;
+        
+        const ctx = uploadCanvas.getContext('2d');
+        
+        // Set canvas dimensions to match image
+        uploadCanvas.width = previewImage.width;
+        uploadCanvas.height = previewImage.height;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, uploadCanvas.width, uploadCanvas.height);
+        
+        // Draw bounding boxes and labels
+        detections.forEach(det => {
+          const [x_center, y_center, width, height] = det.box;
+          const x = x_center - width / 2;
+          const y = y_center - height / 2;
+          
+          // Draw bounding box
+          ctx.strokeStyle = '#facc15';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x, y, width, height);
+          
+          // Draw label background
+          const label = `${det.name} ${(det.confidence * 100).toFixed(1)}%`;
+          ctx.font = '14px Arial';
+          const textWidth = ctx.measureText(label).width;
+          
+          ctx.fillStyle = '#facc15';
+          ctx.fillRect(x, y - 20, textWidth + 10, 20);
+          
+          // Draw label text
+          ctx.fillStyle = 'black';
+          ctx.fillText(label, x + 5, y - 5);
         });
-    }
+        
+        // Show canvas over image
+        uploadCanvas.style.display = 'block';
+      }
 
-    // Demo mode simulation
-    function simulateDetection() {
-      const mockResults = {
-        detections: [
-          { name: 'person', confidence: 0.92, box: [320, 240, 100, 200] },
-          { name: 'person', confidence: 0.87, box: [500, 200, 80, 180] },
-          { name: 'car', confidence: 0.78, box: [150, 300, 120, 80] },
-          { name: 'dog', confidence: 0.65, box: [400, 400, 60, 40] }
-        ],
-        width: 800,
-        height: 600
-      };
-      
-      processDetectionResults(mockResults, 250);
-      saveToHistory(currentFile, mockResults, 250);
-      
-      showAlert('Demo detection completed (backend unavailable)', 'info');
-    }
+      function clearResults() {
+        detectionResults = null;
+        resultsSection.style.display = 'none';
+        clearBtn.disabled = true;
+        downloadBtn.disabled = true;
+        uploadCanvas.style.display = 'none';
+        previewImage.style.display = 'block';
+      }
 
-    // Utility function to format file size
-    function formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-  </script>
-</body>
-</html>
+      function downloadResult() {
+        if (!detectionResults) return;
+        
+        // Create a temporary link to download the canvas image
+        const link = document.createElement('a');
+        link.download = `detection-${new Date().getTime()}.png`;
+        link.href = uploadCanvas.toDataURL();
+        link.click();
+      }
+
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = error => reject(error);
+        });
+      }
+
+      function saveToHistory(file, results, processingTime) {
+        const historyItem = {
+          id: Date.now(),
+          filename: file.name,
+          timestamp: new Date().toISOString(),
+          results: results,
+          processingTime: processingTime,
+          thumbnail: previewImage.src
+        };
+        
+        uploadHistoryData.unshift(historyItem);
+        
+        // Keep only last 20 items
+        if (uploadHistoryData.length > 20) {
+          uploadHistoryData = uploadHistoryData.slice(0, 20);
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('rt-detect-upload-history', JSON.stringify(uploadHistoryData));
+        
+        // Update history display
+        loadUploadHistory();
+      }
+
+      function loadUploadHistory() {
+        try {
+          const stored = localStorage.getItem('rt-detect-upload-history');
+          if (stored) {
+            uploadHistoryData = JSON.parse(stored);
+          }
+        } catch (error) {
+          console.error('Error loading upload history:', error);
+          uploadHistoryData = [];
+        }
+        
+        displayUploadHistory();
+      }
+
+      function displayUploadHistory() {
+        if (uploadHistoryData.length === 0) {
+          uploadHistory.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-secondary);">
+              <p>No upload history yet</p>
+              <p style="font-size: 0.9rem; margin-top: 0.5rem;">Upload and analyze images to see them here</p>
+            </div>
+          `;
+          return;
+        }
+        
+        uploadHistory.innerHTML = uploadHistoryData.map(item => {
+          const detections = item.results.detections || [];
+          const date = new Date(item.timestamp).toLocaleDateString();
+          
+          return `
+            <div class="history-item" onclick="loadHistoryItem('${item.id}')">
+              <div class="history-thumbnail" style="background-image: url('${item.thumbnail}'); background-size: cover; background-position: center;">
+                ${!item.thumbnail ? '🖼️' : ''}
+              </div>
+              <div class="history-details">
+                <h4>${item.filename}</h4>
+                <div class="history-meta">
+                  <div>${detections.length} objects</div>
+                  <div>${date}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function loadHistoryItem(id) {
+        const item = uploadHistoryData.find(i => i.id.toString() === id);
+        if (item) {
+          // Load the image and results
+          previewImage.src = item.thumbnail;
+          previewImage.style.display = 'block';
+          previewPlaceholder.style.display = 'none';
+          currentFile = { name: item.filename };
+          
+          // Process the stored results
+          processDetectionResults(item.results, item.processingTime);
+          
+          showAlert('Loaded from history', 'info');
+        }
+      }
+
+      function showAlert(message, type) {
+        // Remove existing alerts
+        const existingAlerts = document.querySelectorAll('.alert');
+        existingAlerts.forEach(alert => alert.remove());
+        
+        // Create new alert
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        
+        // Insert after the header
+        const header = document.querySelector('.dashboard-header');
+        header.parentNode.insertBefore(alert, header.nextSibling);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+          if (alert.parentNode) {
+            alert.parentNode.removeChild(alert);
+          }
+        }, 5000);
+      }
+
+      function checkBackendStatus() {
+        fetch(`${BACKEND_URL}/health`)
+          .then(response => {
+            if (!response.ok) throw new Error('Backend not responding');
+            showAlert('Backend connected successfully', 'success');
+          })
+          .catch(error => {
+            showAlert('Backend not available - using demo mode', 'warning');
+          });
+      }
+
+      // Demo mode simulation
+      function simulateDetection() {
+        const mockResults = {
+          detections: [
+            { name: 'person', confidence: 0.92, box: [320, 240, 100, 200] },
+            { name: 'person', confidence: 0.87, box: [500, 200, 80, 180] },
+            { name: 'car', confidence: 0.78, box: [150, 300, 120, 80] },
+            { name: 'dog', confidence: 0.65, box: [400, 400, 60, 40] }
+          ],
+          width: 800,
+          height: 600
+        };
+        
+        processDetectionResults(mockResults, 250);
+        saveToHistory(currentFile, mockResults, 250);
+        
+        showAlert('Demo detection completed (backend unavailable)', 'info');
+      }
+
+      // Utility function to format file size
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+    </script>
+  </body>
+  </html>
